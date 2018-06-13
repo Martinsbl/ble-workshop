@@ -17,48 +17,106 @@
     * S140 signifies that the example uses Softdevice S140
 
 1. Click 'Build->Build "_name of project_"' (or click F7 on windows).
-![Build project](./images/build.png)
+    
+    ![Build project](./images/build.png)
 
 1. When the build finishes, notice how SES shows you how much Flash and RAM is being used by your application (the output window says we are using 192 KB of flash, but note that this includes the S140 Softdevice which is 152 kB alone).
-![Initial build](./images/initial_build.png)
+    
+    ![Initial build](./images/initial_build.png)
 
 ## Test the example code
 1. Now let us test the example code. Click 'Target->Download "_name of project_"'. This will program both the Softdevice and the application code to your nRF52840 DK. 
-![Program target](./images/download_application.png)
+
+    ![Program target](./images/download_application.png)
 
 1. You should now see that LED1 on the nRF52840 DK is blinking periodically. This indicates that the application is running and the device is advertising. 
 
 1. Open up [nRF Connect for Mobile](https://www.nordicsemi.com/eng/Products/Nordic-mobile-Apps/nRF-Connect-for-Mobile) and start scanning. Your device should show up in the device list:
-![Device List](./images/device_list.jpg)
 
-1. You might want to change the advertising name to a more unique one. You can do this by modifying the ``DEVICE_NAME`` define in main.c:
+    ![Device List](./images/device_list.jpg)
 
+1. You might want to make the advertising name more unique to help recognize your device. You can do this by modifying the ``DEVICE_NAME`` define in main.c:
+
+    ```c
         #define DEVICE_NAME "Unique name"  /**< Name of device. Will be included in the advertising data. */
+    ```
+    After recompiling and reprogramming your project your device should appear with your new name in the list.
 
-        ```c
-        #define DEVICE_NAME "Unique name"  /**< Name of device. Will be included in the advertising data. */
-        ```
 
-1. Now try to set build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and makes it easier to step through code with debugger. 
-![Debug Build Configuration](./images/debug_build_config.png)
+# Experiment with the logger module
+Most of the examples in the SDK utilizes the [Logger Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_nrf_log.html?cp=4_0_0_3_26) to print error, debug, and information messages to either a UART terminal (like PuTTy) or Segger's own [Real Time Transfer](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) (RTT). The logger module is quite versatile and customizable. Let us try out a few basic things.
+1. Open the file called sdk_config.h. This is a file used to configure a wide range of parameters in the drivers and libraries included in the SDK. You can read more about how the file can be used [here](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/sdk_config.html?cp=4_0_0_1_7). 
+1. Make sure that the Logger Module is enabled by searching for ``NRF_LOG_ENABLED`` in sdk_config.h and make sure it is defined as 1.
 
-# Experiment with logger module
-4. Initialize [Logger module] (INSERT LINK)
-5. Configure logger to use RTT. (WHat happens with FLSH requirements)
-1. Configure logger severity level (WHat happens with FLSH requirements)
-1. enable debugger 
+    ````c
+        #define NRF_LOG_ENABLED 1
+    ````
+1. Next, make sure UART is selected as backend for the Logger Module by setting `NRF_LOG_BACKEND_UART_ENABLED` to 1. Recompile your code and reprogram your kit.
 
-        static void log_init(void)
-        {
-            ret_code_t err_code = NRF_LOG_INIT(NULL);
-            APP_ERROR_CHECK(err_code);
-            NRF_LOG_DEFAULT_BACKENDS_INIT();
-        }
+1. Open up a serial terminal (e.g. PuTTy) and connect to your DK's COM port (default baud rate is 115200). You should see something like this (you might need to reset the application by pressing the BOOT/RESET button on the kit).
 
-    asdf
+    ![Serial logging](./images/putty.png)
 
-1. Print debug message
-1. Start debugger and look for debug message in SES's Debug Terminal. 
+1. Now set build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and makes it easier to step through code with a debugger. 
 
-# Experiment with error handler
-1. Try out APP_ERROR_CHECK(1)
+    ![Debug Build Configuration](./images/debug_build_config.png)
+
+1. Recompile your project and notice how this signifficantly increases the code size. 
+
+1. The Logger Module allows you to print messages of different severity. Try to add these three code lines:
+    ````c
+        ....
+        peer_manager_init();
+
+        // Start execution.
+        NRF_LOG_INFO("Template example started.");
+        // Add THESE LINES
+        NRF_LOG_ERROR("This is an ERROR message.");
+        NRF_LOG_WARNING("This is a WARNING message.");
+        NRF_LOG_DEBUG("This is a DEBUG message.");
+        ....
+    ````
+
+    Now you should see this output on your terminal:
+
+    ![Log Severity](./images/log_severity_info.png)
+
+    Note how there seems to be a missing message! Why is there no message saying `"This is a DEBUG message."`? It is missing because the default severity level is set to "info" in sdk_config.h. We can change this by finding `NRF_LOG_DEFAULT_LEVEL` in sdk_config.h and set it to 4 (Debug). When you recompile the project you should see this in your serial terminal:
+
+    ![Log Severity debug](./images/log_severity_debug.png)
+
+
+
+# How to use the error handler
+One more thing that is extensively used in the SDK, and something goes hand in hand with the Logger Module, is the [Error Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_error.html?cp=4_0_0_3_13). Throughout the entire SDK you will see that functions return error codes and that these error codes can be checked with the macro: ``APP_ERROR_CHECK(error code)``.
+1. So try to add this code after the logging messages: ``APP_ERROR_CHECK(1234)``.
+
+    ````c
+         // Start execution.
+        NRF_LOG_INFO("Template example started.");
+        NRF_LOG_ERROR("This is an ERROR message.");
+        NRF_LOG_WARNING("This is a WARNING message.");
+        NRF_LOG_DEBUG("This is a DEBUG message.");
+        
+        APP_ERROR_CHECK(1234);
+    ````
+
+    When you run the application now you should see an error message printed on your terminal:
+
+    ![Error message](./images/error_message.png)
+    
+    The error message shows the error code and where the code that produced the error is located. In this case it is error number 1234 and the code that produced the error is located at line 805 in main.c.
+
+
+# Bonus tasks
+<details><summary>Use RTT as backend</summary>
+
+1. Disable UART as backend by setting `NRF_LOG_BACKEND_UART_ENABLED` to 0 and instead turn on the RTT backend by setting `NRF_LOG_BACKEND_RTT_ENABLED` to 1. Recompile your code and notice how SES lets how know how the change affects FLASH (Code) and RAM requirements (Data).
+    
+    ![RTT Logging Memory requirements](./images/rtt_backend.png)
+
+1. Start a debugging session and use SES's integrated Debug Terminal to see the debug information.
+
+    ![SES Debug Terminal](./images/ses_debug_terminal.png)
+
+</details>

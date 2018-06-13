@@ -798,6 +798,12 @@ int main(void)
 
     // Start execution.
     NRF_LOG_INFO("Template example started.");
+    NRF_LOG_ERROR("This is an ERROR message.");
+    NRF_LOG_WARNING("This is a WARNING message.");
+    NRF_LOG_DEBUG("This is a DEBUG message.");
+    
+    APP_ERROR_CHECK(1234);
+    
     application_timers_start();
     
     advertising_start(erase_bonds);
