@@ -17,23 +17,23 @@
     * S140 signifies that the example uses Softdevice S140
 
 1. Click 'Build->Build "_name of project_"' (or click F7 on windows).
-![Build project](\images\build.png)
+![Build project](/images/build.png)
 
 1. When the build finishes, notice how SES shows you how much Flash and RAM is being used by your application (the output window says we are using 192 KB of flash, but note that this includes the S140 Softdevice which is 152 kB alone).
-![Initial build](\images\initial_build.png)
+![Initial build](/images/initial_build.png)
 
 ## Test the example code
 1. Now let us test the example code. Click 'Target->Download "_name of project_"'. This will program both the Softdevice and the application code to your nRF52840 DK. 
-![Program target](\images\download_application.png)
+![Program target](/images/download_application.png)
 
 1. You should now see that LED1 on the nRF52840 DK is blinking periodically. This indicates that the application is running and the device is advertising. 
 
 1. Open up [nRF Connect for Mobile](https://www.nordicsemi.com/eng/Products/Nordic-mobile-Apps/nRF-Connect-for-Mobile) and start scanning. Your device should show up in the device list:
-![Device List](\images\device_list.jpg)
+![Device List](/images/device_list.jpg)
 
 
 1. Now try to set build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and makes it easier to step through code with debugger. 
-![Debug Build Configuration](\images\debug_build_config.png)
+![Debug Build Configuration](/images/debug_build_config.png)
 
 # Experiment with logger module
 4. Initialize [Logger module] (INSERT LINK)
