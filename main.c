@@ -802,7 +802,9 @@ int main(void)
     NRF_LOG_WARNING("This is a WARNING message.");
     NRF_LOG_DEBUG("This is a DEBUG message.");
     
-    APP_ERROR_CHECK(1234);
+    
+    uint32_t err_code = nrf_sdh_enable_request();
+    APP_ERROR_CHECK(err_code);
     
     application_timers_start();
     

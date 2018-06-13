@@ -13,10 +13,10 @@
 1. Navigate to the folder _"..\your_sdk_15_folder\examples\ble_peripheral\"_ and make a copy of the folder _"ble_app_template"_. Call the new folder _"workshop"_. This folder contains the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23)  which we will use to get started. 
 
 1. Open up the SES project file. You will find it in this path: _"..\your_sdk_15_folder\examples\ble_peripheral\workshop\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
-    * pca10056 signifies that the example uses PCA10056 the development kit, also known as nRF52840 DK. 
+    * pca10056 signifies that the example uses the PCA10056 development kit, also known as nRF52840 DK. 
     * S140 signifies that the example uses Softdevice S140
 
-1. Click 'Build->Build "_name of project_"' (or click F7 on windows).
+1. To build your project, click 'Build->Build "_name of project_"' (or click F7 on windows).
     
     ![Build project](./images/build.png)
 
@@ -40,30 +40,32 @@
     ```c
         #define DEVICE_NAME "Unique name"  /**< Name of device. Will be included in the advertising data. */
     ```
-    After recompiling and reprogramming your project your device should appear with your new name in the list.
+    After recompiling and reprogramming the project, your device should appear with its new name in the list.
 
 
 # Experiment with the logger module
-Most of the examples in the SDK utilizes the [Logger Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_nrf_log.html?cp=4_0_0_3_26) to print error, debug, and information messages to either a UART terminal (like PuTTy) or Segger's own [Real Time Transfer](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) (RTT). The logger module is quite versatile and customizable. Let us try out a few basic things.
-1. Open the file called sdk_config.h. This is a file used to configure a wide range of parameters in the drivers and libraries included in the SDK. You can read more about how the file can be used [here](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/sdk_config.html?cp=4_0_0_1_7). 
-1. Make sure that the Logger Module is enabled by searching for ``NRF_LOG_ENABLED`` in sdk_config.h and make sure it is defined as 1.
+Most of the examples in the SDK utilize the [Logger Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_nrf_log.html?cp=4_0_0_3_26) to print error, debug, and information messages to either a UART terminal (like PuTTy) or Segger's own [Real Time Transfer](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) (RTT). The logger module is quite versatile and customizable so let us try out a few basic things.
+1. Open the file called _sdk_config.h._ This file is used to configure a wide range of parameters in the drivers and libraries included in the SDK. You can read more about how the file can be used [here](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/sdk_config.html?cp=4_0_0_1_7). 
+1. Make sure that the Logger Module is enabled by searching for ``NRF_LOG_ENABLED`` in _sdk_config.h_ and make sure it is defined as 1.
 
     ````c
         #define NRF_LOG_ENABLED 1
     ````
-1. Next, make sure UART is selected as backend for the Logger Module by setting `NRF_LOG_BACKEND_UART_ENABLED` to 1. Recompile your code and reprogram your kit.
+1. Next, make sure that UART is selected as backend for the Logger Module by setting `NRF_LOG_BACKEND_UART_ENABLED` to 1. Recompile your code and reprogram your kit.
 
-1. Open up a serial terminal (e.g. PuTTy) and connect to your DK's COM port (default baud rate is 115200). You should see something like this (you might need to reset the application by pressing the BOOT/RESET button on the kit).
+1. Open up a serial terminal (e.g. PuTTy) and connect to your DK's COM port (default baud rate is 115200). You should see something like this
 
     ![Serial logging](./images/putty.png)
 
-1. Now set build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and makes it easier to step through code with a debugger. 
+    If you don't see any messages you might need to reset the application by pressing the BOOT/RESET button on the kit.
+
+1. Set the build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and it also makes it easier to step through your code with a debugger. 
 
     ![Debug Build Configuration](./images/debug_build_config.png)
 
 1. Recompile your project and notice how this signifficantly increases the code size. 
 
-1. The Logger Module allows you to print messages of different severity. Try to add these three code lines:
+1. The Logger Module allows you to print messages of different severity. Try to add these three lines of code:
     ````c
         ....
         peer_manager_init();
@@ -81,7 +83,7 @@ Most of the examples in the SDK utilizes the [Logger Module](http://infocenter.n
 
     ![Log Severity](./images/log_severity_info.png)
 
-    Note how there seems to be a missing message! Why is there no message saying `"This is a DEBUG message."`? It is missing because the default severity level is set to "info" in sdk_config.h. We can change this by finding `NRF_LOG_DEFAULT_LEVEL` in sdk_config.h and set it to 4 (Debug). When you recompile the project you should see this in your serial terminal:
+    Note how there seems to be a missing message! Why is there no message saying `"This is a DEBUG message."`? It is missing because the default severity level is set to "info" in _sdk_config.h_. With this severity level only warnings, errors, and info messages are printed. We can change this by finding `NRF_LOG_DEFAULT_LEVEL` in _sdk_config.h_ and set it to 4 (Debug). When you recompile the project you should see this in your serial terminal:
 
     ![Log Severity debug](./images/log_severity_debug.png)
 
@@ -106,6 +108,19 @@ One more thing that is extensively used in the SDK, and something goes hand in h
     ![Error message](./images/error_message.png)
     
     The error message shows the error code and where the code that produced the error is located. In this case it is error number 1234 and the code that produced the error is located at line 805 in main.c.
+
+1. Try to replace `APP_ERROR_CHECK(1234);` with this code:
+
+    ````c
+        uint32_t err_code = nrf_sdh_enable_request();
+        APP_ERROR_CHECK(err_code);
+    ````
+
+    What happens now? You should get another error:
+    
+    ![Invalid state](./images/invalid_state_error.png)
+
+    Here you can see that we get error 8 in return when we call the function ``nrf_sdh_enable_request()``. When you get errors like this, the first thing you should do is to go to [infocenter.nordicsemi.com](http://infocenter.nordicsemi.com/) and look up the documentation for the function that returned the error. The documentation for [nrf_sdh_enable_request()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/group__nrf__sdh.html#ga574d17fdf1c59dec6355e3f525c484ec) tells us that we get error 8, ``NRF_ERROR_INVALID_STATE``, because the SoftDevice is already enabled.
 
 
 # Bonus tasks
