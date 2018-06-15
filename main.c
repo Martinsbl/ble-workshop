@@ -82,6 +82,10 @@
 #include "nrf_log_default_backends.h"
 
 
+//TODO
+#include "nrfx_pwm.h"
+
+
 #define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
@@ -774,6 +778,31 @@ static void advertising_start(bool erase_bonds)
     }
 }
 
+nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
+
+void init_pwm(void)
+{
+    uint32_t err_code;
+    nrfx_pwm_config_t const config0 =
+    {
+	.output_pins =
+	{
+	    BSP_LED_0 | NRFX_PWM_PIN_INVERTED, // channel 0
+	    NRFX_PWM_PIN_NOT_USED,             // channel 1
+	    NRFX_PWM_PIN_NOT_USED,             // channel 2
+	    NRFX_PWM_PIN_NOT_USED,             // channel 3
+	},
+	.irq_priority = APP_IRQ_PRIORITY_LOW,
+	.base_clock   = NRF_PWM_CLK_1MHz,
+	.count_mode   = NRF_PWM_MODE_UP,
+	.top_value    = 1000,
+	.load_mode    = NRF_PWM_LOAD_COMMON,
+	.step_mode    = NRF_PWM_STEP_AUTO
+    };
+    err_code = nrfx_pwm_init(&m_pwm0, &config0, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
 
 /**@brief Function for application main entry.
  */
@@ -796,16 +825,12 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
+
+    init_pwm();
+
     // Start execution.
     NRF_LOG_INFO("Template example started.");
-    NRF_LOG_ERROR("This is an ERROR message.");
-    NRF_LOG_WARNING("This is a WARNING message.");
-    NRF_LOG_DEBUG("This is a DEBUG message.");
-    
-    
-    uint32_t err_code = nrf_sdh_enable_request();
-    APP_ERROR_CHECK(err_code);
-    
+        
     application_timers_start();
     
     advertising_start(erase_bonds);
