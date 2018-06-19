@@ -82,11 +82,12 @@
 #include "nrf_log_default_backends.h"
 
 
-//TODO
+//TODO Include PWM driver header file
 #include "nrfx_pwm.h"
+#include "nrf_delay.h"
 
 
-#define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "Servo"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -787,20 +788,53 @@ void init_pwm(void)
     {
 	.output_pins =
 	{
-	    BSP_LED_0 | NRFX_PWM_PIN_INVERTED, // channel 0
-	    NRFX_PWM_PIN_NOT_USED,             // channel 1
-	    NRFX_PWM_PIN_NOT_USED,             // channel 2
-	    NRFX_PWM_PIN_NOT_USED,             // channel 3
+	    NRFX_PWM_PIN_NOT_USED,			// channel 0
+	    BSP_LED_2,      // channel 1
+	    NRFX_PWM_PIN_NOT_USED,      // channel 2
+	    NRFX_PWM_PIN_NOT_USED,      // channel 3
 	},
 	.irq_priority = APP_IRQ_PRIORITY_LOW,
-	.base_clock   = NRF_PWM_CLK_1MHz,
+	.base_clock   = NRF_PWM_CLK_500kHz,
 	.count_mode   = NRF_PWM_MODE_UP,
-	.top_value    = 1000,
-	.load_mode    = NRF_PWM_LOAD_COMMON,
+	.top_value    = 10000,
+	.load_mode    = NRF_PWM_LOAD_INDIVIDUAL,
 	.step_mode    = NRF_PWM_STEP_AUTO
     };
     err_code = nrfx_pwm_init(&m_pwm0, &config0, NULL);
     APP_ERROR_CHECK(err_code);
+}
+
+
+
+static nrf_pwm_values_common_t pwm_value[] =
+{
+    10
+};
+
+static nrf_pwm_values_individual_t ind = 
+{
+    .channel_0 = 1, ///< Duty cycle value for channel 0.
+    .channel_1 = 199, ///< Duty cycle value for channel 1.
+    .channel_2 = 0, ///< Duty cycle value for channel 2.
+    .channel_3 = 0 ///< Duty cycle value for channel 3.
+};
+
+nrf_pwm_sequence_t const pwm_sequence =
+{
+//    .values.p_common = pwm_value,
+    .values.p_individual = &ind,
+    .length          = (sizeof(ind) / sizeof(uint16_t)),
+    .repeats         = 0,
+    .end_delay       = 0
+};
+
+
+void set_servo(uint8_t servo_per_cent)
+{
+    nrfx_pwm_stop(&m_pwm0, true);
+    pwm_value[0] = 500 + (servo_per_cent * 10) + (1<<15);
+    ind.channel_0 = 500 + (servo_per_cent * 10) + (1<<15);
+    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
 }
 
 
@@ -827,17 +861,35 @@ int main(void)
 
 
     init_pwm();
-
+    
+    set_servo(0);
+    nrf_delay_ms(700);
+    set_servo(100);
+    nrf_delay_ms(700);
+    set_servo(0);
+    nrf_delay_ms(700);
+//    nrfx_pwm_stop(&m_pwm0, true);
+    
+    
     // Start execution.
     NRF_LOG_INFO("Template example started.");
         
     application_timers_start();
     
     advertising_start(erase_bonds);
+    
+    const int delay = 1;
 
     // Enter main loop.
     for (;;)
     {
+	for(uint8_t i = 0; i <= 100; i++)
+	{
+	    nrfx_pwm_stop(&m_pwm0, true);
+	    ind.channel_1 = 0 + (i * 100) + (1<<15);
+	    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+	    nrf_delay_ms(10);
+	}
         idle_state_handle();
     }
 }
