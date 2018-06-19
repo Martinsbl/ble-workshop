@@ -26,41 +26,33 @@ The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.
 Now we should be ready to use the PWM driver in our project. 
 
 ## Initialize the PWM driver
-Many of the drivers and libraries in Nordic's SDK are configured and initialized by filling out a configuration structure which is then passed into a driver init() function. In many cases, the configuration structure includes sub-structures and dozens of parameters. Luckily, the parameters usually defaults to 0, so you ususally get away with only configuring the parameters that matters to you. This is how we are going to configure the PWM driver as well. 
+Many of the drivers and libraries in Nordic's SDK are configured and initialized by filling out a configuration structure which is then passed into a driver init() function. In many cases, the configuration structure includes sub-structures and dozens of parameters. Luckily, the parameters usually defaults to 0, so usually you will get away with configuring only the parameters that matters to you. There migh also be macros you can use to fill out the parameters. This is how we are going to configure the PWM driver as well. 
 
-1. We start by declaring a [PWM driver instance structure](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrfx__pwm__t.html?cp=4_0_0_6_9_0_12_1_1). Then we define a function called `init_pwm()` where we configure and initialize the peripheral. Inside the function we fill out a [PWM driver configuration structure](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk5.v15.0.0%2Fstructnrfx__pwm__config__t.html). Finally, we pass these two structures into the [PWM driver initialization function](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/group__nrfx__pwm.html#gaf06bb9053293005bc91217e5a1791261). And of course we check the return code with `APP_ERROR_CHECK(err_code)` afterwards.
+1. We start by declaring a [PWM driver instance structure](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrfx__pwm__t.html?cp=4_0_0_6_9_0_12_1_1). Add this line of code somewhere at the top of main.c: 
+    ````c
+        // Declare a PWM driver instance structure
+        nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
+    ````
+
+1. Then we define a function called `init_pwm()` where we configure and initialize the peripheral. Inside the function we fill out a [PWM driver configuration structure](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk5.v15.0.0%2Fstructnrfx__pwm__config__t.html). Finally, we pass these two structures into the [PWM driver initialization function](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/group__nrfx__pwm.html#gaf06bb9053293005bc91217e5a1791261). And of course we check the return code with `APP_ERROR_CHECK(err_code)` afterwards.
 
     Add this code to main.c: 
 
     ````c
-        // Declare a PWM driver instance structure
-        nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
-
         // Function for initializing the PWM
         void init_pwm(void)
         {
             uint32_t err_code;
+            // Declare a configuration structure and use a macro to instantiate it with default parameters.
+            nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
 
-            // Fill out the configuration structure
-            nrfx_pwm_config_t const config0 =
-            {
-                .output_pins =
-                {
-                    BSP_LED_0, // channel 0
-                    NRFX_PWM_PIN_NOT_USED,             // channel 1
-                    NRFX_PWM_PIN_NOT_USED,             // channel 2
-                    NRFX_PWM_PIN_NOT_USED,             // channel 3
-                },
-                .irq_priority = APP_IRQ_PRIORITY_LOW,
-                .base_clock   = NRF_PWM_CLK_1MHz,
-                .count_mode   = NRF_PWM_MODE_UP,
-                .top_value    = 1000,
-                .load_mode    = NRF_PWM_LOAD_COMMON,
-                .step_mode    = NRF_PWM_STEP_AUTO
-            };
+            // We must override some of the parameters:
+            pwm_config.output_pins[0] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
+            pwm_config.top_value    = 10000; // Make PWM count from 0 - 10,000
+            pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
             
-            // Pass configuration and instance structure to initialization function.
-            err_code = nrfx_pwm_init(&m_pwm0, &config0, NULL);
+            // Pass config structure into driver init() function 
+            err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
             APP_ERROR_CHECK(err_code);
         }
     ````

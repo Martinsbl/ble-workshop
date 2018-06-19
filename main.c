@@ -781,37 +781,29 @@ static void advertising_start(bool erase_bonds)
 
 nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
 
+
+// Function for initializing the PWM
 void init_pwm(void)
 {
+    // Declare a PWM driver instance structure
+    nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
+
     uint32_t err_code;
-    nrfx_pwm_config_t const config0 =
-    {
-	.output_pins =
-	{
-	    NRFX_PWM_PIN_NOT_USED,			// channel 0
-	    BSP_LED_2,      // channel 1
-	    NRFX_PWM_PIN_NOT_USED,      // channel 2
-	    NRFX_PWM_PIN_NOT_USED,      // channel 3
-	},
-	.irq_priority = APP_IRQ_PRIORITY_LOW,
-	.base_clock   = NRF_PWM_CLK_500kHz,
-	.count_mode   = NRF_PWM_MODE_UP,
-	.top_value    = 10000,
-	.load_mode    = NRF_PWM_LOAD_INDIVIDUAL,
-	.step_mode    = NRF_PWM_STEP_AUTO
-    };
-    err_code = nrfx_pwm_init(&m_pwm0, &config0, NULL);
+    // Declare a configuration structure and use a macro to instantiate it with default parameters.
+    nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
+
+    // We must override some of the parameters:
+    pwm_config.output_pins[0] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
+    pwm_config.top_value    = 10000; // Make PWM count from 0 - 10,000
+    pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
+    
+    // Pass config structure into driver init() function 
+    err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
     APP_ERROR_CHECK(err_code);
+    
 }
 
-
-
-static nrf_pwm_values_common_t pwm_value[] =
-{
-    10
-};
-
-static nrf_pwm_values_individual_t ind = 
+static nrf_pwm_values_individual_t pwm_duty_cycles = 
 {
     .channel_0 = 1, ///< Duty cycle value for channel 0.
     .channel_1 = 199, ///< Duty cycle value for channel 1.
@@ -822,8 +814,8 @@ static nrf_pwm_values_individual_t ind =
 nrf_pwm_sequence_t const pwm_sequence =
 {
 //    .values.p_common = pwm_value,
-    .values.p_individual = &ind,
-    .length          = (sizeof(ind) / sizeof(uint16_t)),
+    .values.p_individual = &pwm_duty_cycles,
+    .length          = (sizeof(pwm_duty_cycles) / sizeof(uint16_t)),
     .repeats         = 0,
     .end_delay       = 0
 };
@@ -832,8 +824,7 @@ nrf_pwm_sequence_t const pwm_sequence =
 void set_servo(uint8_t servo_per_cent)
 {
     nrfx_pwm_stop(&m_pwm0, true);
-    pwm_value[0] = 500 + (servo_per_cent * 10) + (1<<15);
-    ind.channel_0 = 500 + (servo_per_cent * 10) + (1<<15);
+    pwm_duty_cycles.channel_0 = 500 + (servo_per_cent * 10) + (1<<15);
     nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
 }
 
@@ -862,12 +853,12 @@ int main(void)
 
     init_pwm();
     
-    set_servo(0);
-    nrf_delay_ms(700);
-    set_servo(100);
-    nrf_delay_ms(700);
-    set_servo(0);
-    nrf_delay_ms(700);
+//    set_servo(0);
+//    nrf_delay_ms(700);
+//    set_servo(100);
+//    nrf_delay_ms(700);
+//    set_servo(0);
+//    nrf_delay_ms(700);
 //    nrfx_pwm_stop(&m_pwm0, true);
     
     
@@ -878,15 +869,13 @@ int main(void)
     
     advertising_start(erase_bonds);
     
-    const int delay = 1;
-
     // Enter main loop.
     for (;;)
     {
 	for(uint8_t i = 0; i <= 100; i++)
 	{
 	    nrfx_pwm_stop(&m_pwm0, true);
-	    ind.channel_1 = 0 + (i * 100) + (1<<15);
+	    pwm_duty_cycles.channel_0 = 0 + (i * 100) + (1<<15);
 	    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
 	    nrf_delay_ms(10);
 	}
