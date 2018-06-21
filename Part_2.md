@@ -65,4 +65,98 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
 1. We also explicitly need to enable instance 0 in _sdk_config.h_. Do this by searching for ``NRFX_PWM0_ENABLED`` and set it to 1.
 
+## Play a PWM sequence
+The PWM peripheral is quite complex and flexible. For example, you can store a sequence of PWM duty cycles in RAM and have the PWM cycle through these autonomuously using [EasyDMA](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16_1#concept_wxj_hnw_nr). This allows you to make complex PWM patterns without involving the CPU to update the duty cycle all the time. For example, you can make a sequence that fades an LED repeatedly without using the CPU at all:
+
+![PWM sequence](./images/part2/pwm_sequence.PNG)
+
+One can also make individual sequences for each of the 4 PWM channels:
+
+![PWM sequence](./images/part2/pwm_sequences.PNG)
+
+Let us start easy and make a single sequence for channel 0, and make the sequence only one element long. In other words, let us make a continuous PWM signal with constant duty cycle. 
+
+1. Start by declaring a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put indivitual values for each the PWM channels, and set channel 0 to 9000:
+
+    ````c
+    // Structure for defining duty cycle values for sequences
+    static nrf_pwm_values_individual_t pwm_duty_cycles = 
+    {
+        .channel_0 = 9000, //< Duty cycle value for channel 0.
+        .channel_1 = 0, //< Duty cycle value for channel 1.
+        .channel_2 = 0, //< Duty cycle value for channel 2.
+        .channel_3 = 0  //< Duty cycle value for channel 3.
+    };
+    ````
+
+1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behaviour of the sequence. 
+
+    ````c
+    static nrf_pwm_sequence_t pwm_sequence =
+    {
+        .values.p_individual = &pwm_duty_cycle_values,
+        .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
+        .repeats         = 0,
+        .end_delay       = 0
+    };`
+    ````
+
+1. Finally, in your main() function, below the line:
+
+    ````c
+    // Start execution.
+    NRF_LOG_INFO("Template example started.");
+    ````
+
+    call the PWM initialization function and start the PWM "playback" of our sequence: 
+    
+    ````c
+    init_pwm();
+    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+    ````
+    
+Now you should see that LED_4 lights up, but stays relatively dim compared to LED_1 (which should be blinking).
+
+<details><summary>Bonus tasks: Play a sequence</summary>
+
+1. Make an array of 10 ``nrf_pwm_values_individual_t`` structures.
+
+    ````c
+    // Structure for defining duty cycle values for sequences
+    static nrf_pwm_values_individual_t pwm_duty_cycles[10];
+    ````
+
+1. Before you start the playback, configure the sequence for PWM channel 0 like this:
+
+    ````c
+    pwm_values[0].channel_0 = 5;
+    pwm_values[1].channel_0 = 10;
+    pwm_values[2].channel_0 = 20;
+    pwm_values[3].channel_0 = 30;
+    pwm_values[4].channel_0 = 40;
+    pwm_values[5].channel_0 = 50;
+    pwm_values[6].channel_0 = 60;
+    pwm_values[7].channel_0 = 70;
+    pwm_values[8].channel_0 = 80;
+    pwm_values[9].channel_0 = 90;
+    ````
+
+1. Use the repeat field in the `nrf_pwm_sequence_t` structure to repead each PWM value n number of times before incrementing to the next value in the sequence:
+// NOT TESET! CHECK THIS OUT
+    ````c
+    static nrf_pwm_sequence_t pwm_sequence =
+    {
+        .values.p_individual = &pwm_duty_cycle_values,
+        .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
+        .repeats         = n, 
+        .end_delay       = 0
+    };`
+    ````
+
+1. The LED should now keep on endlessly fading in and out. 
+
+1. Try to play around with different values in the repeat field. What happens?
+
+</details>
+
 ## Test Servo
