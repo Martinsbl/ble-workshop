@@ -160,12 +160,15 @@ Now you should see that LED_4 lights up, but stays relatively dim compared to LE
 ## Test the servo
 The servo is controlled by feeding it a PWM signal and varying the duty cycle. It has three wires comming out of it which is for 5 V supply voltage, ground, and a PWM signal. So start by connecting it like this:
 ![Servo connections](./images/part2/servo_connections.png)
-There is no perticular reason to use pin P0.03 for the PWM, but it is my favourite pin because it is close to the 5 V and GND pins, and maybe more importantly, it is not used by other peripherals or hardware on the kit (like UART, crystals, NFC, etc.). 
+There is no particular reason to use pin P0.03 for the PWM, but it is my favourite pin because it is close to the 5 V and GND pins, and maybe more importantly, it is not used by other hardware on the kit (like crystals, NFC, etc.). 
 
 According to the SG90's datasheet we should use PWM signal with a 20 ms period (50 Hz), and vary the duty cycle between 1 and 2 ms.
 
 ![PWM Servo control](./images/part2/pwm_servo_control.png)
 
-1. Back to the code again. First we need a signal with a 20 ms period. 
+The default PWM base clock is 1 MHz, so in order to get a 20 ms period we need a counter top value for the PWM  equal to 20,000. Then, to get a duty cycle of 19 ms low, and 1 ms high, we need to set the PWM duty cycle value to 19,000. The following diagram shows the relationship between the counter top and PWM duty cycle value: 
 
+![PWM Counter in up mode](./images/part2/pwm_edge_polarity.png)
+
+1. Back to the code again. First we need a signal with a 20 ms period. 
 
