@@ -806,17 +806,19 @@ void init_pwm(void)
     
 }
 
-static nrf_pwm_values_individual_t pwm_duty_cycle_values[2];//[10];// = 
-//{
-//    .channel_0 = 500, //< Duty cycle value for channel 0.
-//    .channel_1 = 90, //< Duty cycle value for channel 1.
-//    .channel_2 = 9000, //< Duty cycle value for channel 2.
-//    .channel_3 = 5000  //< Duty cycle value for channel 3.
-//};
+//static nrf_pwm_values_individual_t pwm_duty_cycle_values[2];//[10];// = 
+
+static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
+{
+    .channel_0 = 19000, //< Duty cycle value for channel 0.
+    .channel_1 = 3000, //< Duty cycle value for channel 1.
+    .channel_2 = 8000, //< Duty cycle value for channel 2.
+    .channel_3 = 20000  //< Duty cycle value for channel 3.
+};
 
 static nrf_pwm_sequence_t pwm_sequence =
 {
-    .values.p_individual = pwm_duty_cycle_values,
+    .values.p_individual = &pwm_duty_cycle_values,
     .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
     .repeats         = 50,
     .end_delay       = 0
@@ -846,11 +848,26 @@ int main(void)
     init_pwm();
     sd_clock_hfclk_request();
 
-    pwm_duty_cycle_values[0].channel_0 = 19000;
-    pwm_duty_cycle_values[1].channel_0 = 18000;
+//    pwm_duty_cycle_values[0].channel_0 = 1000;
+//    pwm_duty_cycle_values[1].channel_0 = 18000;
+//    
+//    
+//    pwm_duty_cycle_values[0].channel_1 = 1000;
+//    pwm_duty_cycle_values[1].channel_1 = 1000;
 
     nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-    
+
+    for(int i = 0; i < 2; i++)
+    {
+	nrf_delay_ms(500);
+	pwm_duty_cycle_values.channel_0 = 18000;
+	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+	
+	nrf_delay_ms(500);
+	pwm_duty_cycle_values.channel_0 = 19000;
+	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+    }
+
 //    for(int i = 0; i < 2; i++)
 //    {
 //	nrf_delay_ms(500);
