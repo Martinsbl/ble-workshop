@@ -82,12 +82,7 @@
 #include "nrf_log_default_backends.h"
 
 
-//TODO Include PWM driver header file
-#include "nrfx_pwm.h"
-#include "nrf_delay.h"
-
-
-#define DEVICE_NAME                     "Servo"                       /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -779,51 +774,6 @@ static void advertising_start(bool erase_bonds)
     }
 }
 
-nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
-
-
-// Function for initializing the PWM
-void init_pwm(void)
-{
-    // Declare a PWM driver instance structure
-    nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
-
-    uint32_t err_code;
-    // Declare a configuration structure and use a macro to instantiate it with default parameters.
-    nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
-
-    // We must override some of the parameters:
-    pwm_config.output_pins[0] = 3; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
-    pwm_config.output_pins[1] = LED_2; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
-    pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
-    pwm_config.output_pins[3] = LED_4; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
-    pwm_config.top_value    = 20000; // Make PWM count from 0 - 10,000
-    pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
-    
-    // Pass config structure into driver init() function 
-    err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
-    APP_ERROR_CHECK(err_code);
-    
-}
-
-//static nrf_pwm_values_individual_t pwm_duty_cycle_values[2];//[10];// = 
-
-static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
-{
-    .channel_0 = 19000, //< Duty cycle value for channel 0.
-    .channel_1 = 3000, //< Duty cycle value for channel 1.
-    .channel_2 = 8000, //< Duty cycle value for channel 2.
-    .channel_3 = 20000  //< Duty cycle value for channel 3.
-};
-
-static nrf_pwm_sequence_t pwm_sequence =
-{
-    .values.p_individual = &pwm_duty_cycle_values,
-    .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
-    .repeats         = 50,
-    .end_delay       = 0
-};
-
 
 /**@brief Function for application main entry.
  */
@@ -831,6 +781,8 @@ int main(void)
 {
     bool erase_bonds;
 
+    
+    
     // Initialize.
     log_init();
     timers_init();
@@ -844,51 +796,12 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
-
-    init_pwm();
-    sd_clock_hfclk_request();
-
-//    pwm_duty_cycle_values[0].channel_0 = 1000;
-//    pwm_duty_cycle_values[1].channel_0 = 18000;
-//    
-//    
-//    pwm_duty_cycle_values[0].channel_1 = 1000;
-//    pwm_duty_cycle_values[1].channel_1 = 1000;
-
-    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-
-    for(int i = 0; i < 2; i++)
-    {
-	nrf_delay_ms(500);
-	pwm_duty_cycle_values.channel_0 = 18000;
-	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-	
-	nrf_delay_ms(500);
-	pwm_duty_cycle_values.channel_0 = 19000;
-	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-    }
-
-//    for(int i = 0; i < 2; i++)
-//    {
-//	nrf_delay_ms(500);
-//	nrfx_pwm_stop(&m_pwm0, true);
-//	pwm_duty_cycle_values[0].channel_0 = 1000 | (1 << 15);
-//	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-//	
-//	nrf_delay_ms(500);
-//	nrfx_pwm_stop(&m_pwm0, true);
-//	pwm_duty_cycle_values[0].channel_0 = 2000 | (1 << 15);
-//	nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-//    }
-    
-    
     // Start execution.
     NRF_LOG_INFO("Template example started.");
-        
     application_timers_start();
     
     advertising_start(erase_bonds);
-    
+
     // Enter main loop.
     for (;;)
     {

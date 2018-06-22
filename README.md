@@ -11,9 +11,14 @@ This first part of the workshop is intended to give a very quick introduction to
     _"C:\subfolder1\subfolder2\subfolder3\subfolder4\subfolder5\subfolder6\SDK_15\"_
 
     
-1. Navigate to the folder _"..\your_sdk_15_folder\examples\ble_peripheral\"_ and make a copy of the folder _"ble_app_template"_. Call the new folder _"workshop"_. This folder contains the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23)  which we will use to get started. The example initiates the Softdevice and starts advertising, but there are no BLE services or characteristics added. We will add that later. 
+1. Navigate to the folder _"..\your_sdk_15_folder\examples\ble_peripheral\"_ and either: 
+    - Clone [this github repository](https://github.com/Martinsbl/ble-workshop) using git
+    - Or download the repository as a .zip file and extract it to this folder.
+        ![Download and Extract](./images/download_zip.png)
 
-1. Open up the SES project file. You will find it in this path: _"..\your_sdk_15_folder\examples\ble_peripheral\workshop\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
+    This repository contains a slightly modified version of the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23). The example initiates the Softdevice and starts advertising, but there are no BLE services or characteristics added. The difference from the original example is just a few project settings and tweaks. I hope this will allow us to spend more time on the fun stuff and less time on "backend" settings. 
+
+1. Open up the SES project file. You should now find it in this path (**Correct file path is important!**): _"..\your_sdk_15_folder\examples\ble_peripheral\ble-workshop\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
     * pca10056 signifies that the example uses the PCA10056 development kit, also known as nRF52840 DK. 
     * S140 signifies that the example uses Softdevice S140
 

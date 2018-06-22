@@ -110,7 +110,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
     
 Now you should see that one of the LEDs lights up, but stays relatively dim compared to LED1 (which should be blinking while the kit is advertising).
 
-<!-- <details><summary>Bonus tasks: Play a sequence</summary> -->
+<details><summary>Bonus tasks: Play a sequence</summary>
 
 The PWM peripheral is quite complex and flexible. For example, you can store a sequence of PWM duty cycles in RAM and have the PWM cycle through these autonomuously using [EasyDMA](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16_1#concept_wxj_hnw_nr). This allows you to make complex PWM patterns without involving the CPU to update the duty cycle all the time. For example, you can make a sequence that fades an LED repeatedly without using the CPU at all:
 
@@ -198,7 +198,7 @@ Back to the code again:
     pwm_config.output_pins[0] = 3; // Connect P0.03 on the nRF52840 DK to PWM Channel 0
     ````
 
-1. Compile and download your code. Dependent on what position the servo was already in you might see it move to its new position, and then stay still again. 
+1. Compile and download your code. Dependent on what position the servo was already in, you might see it move to its new position, and then stay still again. 
 
 1. Try to change the duty cycle value to 18,000, and see if something happens. The servo should move to a new position and then stay still. 
 
@@ -217,3 +217,36 @@ Back to the code again:
         nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
     }
     ````
+
+<details><summary>Bonus tasks: Control the servo with a sequence</summary>
+
+1. Make a new array of 4 ``nrf_pwm_values_individual_t`` structures.
+
+    ````c
+    // Structure for defining duty cycle values for sequences
+    static nrf_pwm_values_individual_t pwm_duty_cycle_values[4];
+    ````
+
+1. Before you start the playback, configure the sequence for PWM channel 0 like this:
+
+    ````c
+    pwm_duty_cycle_values[0].channel_0 = 19000;
+    pwm_duty_cycle_values[1].channel_0 = 18500;
+    pwm_duty_cycle_values[2].channel_0 = 18000;
+    pwm_duty_cycle_values[3].channel_0 = 17500;
+    ````
+
+1. Use the ``repeat`` field in the `nrf_pwm_sequence_t` structure to repeat each PWM value 50 times before incrementing to the next value in the sequence (50 * 20 ms = 1 second playback of each value):
+    ````c
+    static nrf_pwm_sequence_t pwm_sequence =
+    {
+        .values.p_individual = &pwm_duty_cycle_values,
+        .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
+        .repeats         = 50, 
+        .end_delay       = 0
+    };`
+    ````
+
+1. The servo should now iterate through 4 different angles in an endless loop. 
+
+</details>
