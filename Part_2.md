@@ -68,11 +68,11 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 ## Play a PWM sequence
 The PWM peripheral is quite complex and flexible. For example, you can store a sequence of PWM duty cycles in RAM and have the PWM cycle through these autonomuously using [EasyDMA](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16_1#concept_wxj_hnw_nr). This allows you to make complex PWM patterns without involving the CPU to update the duty cycle all the time. For example, you can make a sequence that fades an LED repeatedly without using the CPU at all:
 
-![PWM sequence](./images/part2/pwm_sequence.PNG)
+![PWM sequence](./images/part2/pwm_sequence.png)
 
 One can also make individual sequences for each of the 4 PWM channels:
 
-![PWM sequence](./images/part2/pwm_sequences.PNG)
+![PWM sequence](./images/part2/pwm_sequences.png)
 
 Let us start easy and make a single sequence for channel 0, and make the sequence only one element long. In other words, let us make a continuous PWM signal with constant duty cycle. 
 
@@ -80,7 +80,7 @@ Let us start easy and make a single sequence for channel 0, and make the sequenc
 
     ````c
     // Structure for defining duty cycle values for sequences
-    static nrf_pwm_values_individual_t pwm_duty_cycles = 
+    static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
     {
         .channel_0 = 9000, //< Duty cycle value for channel 0.
         .channel_1 = 0, //< Duty cycle value for channel 1.
@@ -123,26 +123,25 @@ Now you should see that LED_4 lights up, but stays relatively dim compared to LE
 
     ````c
     // Structure for defining duty cycle values for sequences
-    static nrf_pwm_values_individual_t pwm_duty_cycles[10];
+    static nrf_pwm_values_individual_t pwm_duty_cycle_values[10];
     ````
 
 1. Before you start the playback, configure the sequence for PWM channel 0 like this:
 
     ````c
-    pwm_values[0].channel_0 = 5;
-    pwm_values[1].channel_0 = 10;
-    pwm_values[2].channel_0 = 20;
-    pwm_values[3].channel_0 = 30;
-    pwm_values[4].channel_0 = 40;
-    pwm_values[5].channel_0 = 50;
-    pwm_values[6].channel_0 = 60;
-    pwm_values[7].channel_0 = 70;
-    pwm_values[8].channel_0 = 80;
-    pwm_values[9].channel_0 = 90;
+    pwm_duty_cycle_values[0].channel_0 = 5;
+    pwm_duty_cycle_values[1].channel_0 = 10;
+    pwm_duty_cycle_values[2].channel_0 = 20;
+    pwm_duty_cycle_values[3].channel_0 = 30;
+    pwm_duty_cycle_values[4].channel_0 = 40;
+    pwm_duty_cycle_values[5].channel_0 = 50;
+    pwm_duty_cycle_values[6].channel_0 = 60;
+    pwm_duty_cycle_values[7].channel_0 = 70;
+    pwm_duty_cycle_values[8].channel_0 = 80;
+    pwm_duty_cycle_values[9].channel_0 = 90;
     ````
 
-1. Use the repeat field in the `nrf_pwm_sequence_t` structure to repead each PWM value n number of times before incrementing to the next value in the sequence:
-// NOT TESET! CHECK THIS OUT
+1. Use the ``repeat`` field in the `nrf_pwm_sequence_t` structure to repeat each PWM value n number of times before incrementing to the next value in the sequence:
     ````c
     static nrf_pwm_sequence_t pwm_sequence =
     {
@@ -152,11 +151,21 @@ Now you should see that LED_4 lights up, but stays relatively dim compared to LE
         .end_delay       = 0
     };`
     ````
+    ![PWM Value repeats](./images/part2/pwm_value_repeats.PNG)
 
 1. The LED should now keep on endlessly fading in and out. 
 
-1. Try to play around with different values in the repeat field. What happens?
-
 </details>
 
-## Test Servo
+## Test the servo
+The servo is controlled by feeding it a PWM signal and varying the duty cycle. It has three wires comming out of it which is for 5 V supply voltage, ground, and a PWM signal. So start by connecting it like this:
+![Servo connections](./images/part2/servo_connections.png)
+There is no perticular reason to use pin P0.03 for the PWM, but it is my favourite pin because it is close to the 5 V and GND pins, and maybe more importantly, it is not used by other peripherals or hardware on the kit (like UART, crystals, NFC, etc.). 
+
+According to the SG90's datasheet we should use PWM signal with a 20 ms period (50 Hz), and vary the duty cycle between 1 and 2 ms.
+
+![PWM Servo control](./images/part2/pwm_servo_control.png)
+
+1. Back to the code again. First we need a signal with a 20 ms period. 
+
+

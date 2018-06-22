@@ -797,7 +797,7 @@ void init_pwm(void)
     pwm_config.output_pins[1] = LED_2; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
     pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
     pwm_config.output_pins[3] = LED_4; // Connect LED_3 on the nRF52840 DK to PWM Channel 0
-    pwm_config.top_value    = 10000; // Make PWM count from 0 - 10,000
+    pwm_config.top_value    = 100; // Make PWM count from 0 - 10,000
     pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
     
     // Pass config structure into driver init() function 
@@ -806,19 +806,19 @@ void init_pwm(void)
     
 }
 
-static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
-{
-    .channel_0 = 500, //< Duty cycle value for channel 0.
-    .channel_1 = 90, //< Duty cycle value for channel 1.
-    .channel_2 = 9000, //< Duty cycle value for channel 2.
-    .channel_3 = 5000  //< Duty cycle value for channel 3.
-};
+static nrf_pwm_values_individual_t pwm_duty_cycle_values[10];// = 
+//{
+//    .channel_0 = 500, //< Duty cycle value for channel 0.
+//    .channel_1 = 90, //< Duty cycle value for channel 1.
+//    .channel_2 = 9000, //< Duty cycle value for channel 2.
+//    .channel_3 = 5000  //< Duty cycle value for channel 3.
+//};
 
 static nrf_pwm_sequence_t pwm_sequence =
 {
-    .values.p_individual = &pwm_duty_cycle_values,
+    .values.p_individual = pwm_duty_cycle_values,
     .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
-    .repeats         = 0,
+    .repeats         = 1001,
     .end_delay       = 0
 };
 
@@ -844,6 +844,28 @@ int main(void)
 
 
     init_pwm();
+
+pwm_duty_cycle_values[0].channel_1 = 2;
+pwm_duty_cycle_values[1].channel_1 = 2;
+pwm_duty_cycle_values[2].channel_1 = 4;
+pwm_duty_cycle_values[3].channel_1 = 8;
+pwm_duty_cycle_values[4].channel_1 = 16;
+pwm_duty_cycle_values[5].channel_1 = 32;
+pwm_duty_cycle_values[6].channel_1 = 64;
+pwm_duty_cycle_values[7].channel_1 = 100;
+pwm_duty_cycle_values[8].channel_1 = 1;
+pwm_duty_cycle_values[9].channel_1 = 1;
+
+pwm_duty_cycle_values[0].channel_0 = 5;
+pwm_duty_cycle_values[1].channel_0 = 10;
+pwm_duty_cycle_values[2].channel_0 = 20;
+pwm_duty_cycle_values[3].channel_0 = 30;
+pwm_duty_cycle_values[4].channel_0 = 40;
+pwm_duty_cycle_values[5].channel_0 = 50;
+pwm_duty_cycle_values[6].channel_0 = 60;
+pwm_duty_cycle_values[7].channel_0 = 70;
+pwm_duty_cycle_values[8].channel_0 = 80;
+pwm_duty_cycle_values[9].channel_0 = 90;
     
     nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
     
