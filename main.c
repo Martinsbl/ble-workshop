@@ -698,7 +698,7 @@ static void advertising_start(bool erase_bonds)
 
 //TODO Define structure with PWM duty cycle values
 
-
+//TODO Define structure with PWM sequence infp
 
 /**@brief Function for application main entry.
  */
