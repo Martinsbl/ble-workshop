@@ -51,7 +51,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
             pwm_config.output_pins[1] = LED_2; // Connect LED_2 on the nRF52840 DK to PWM Channel 1
             pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 2
             pwm_config.output_pins[3] = LED_4; // Connect LED_4 on the nRF52840 DK to PWM Channel 3
-            pwm_config.top_value    = 20000; // Make PWM count from 0 - 10,000
+            pwm_config.top_value    = 100; // Make PWM count from 0 - 100
             pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
             
             // Pass config structure into driver init() function 
@@ -74,10 +74,10 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
     // Structure for defining duty cycle values for sequences
     static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
     {
-        .channel_0 = 500, //< Duty cycle value for channel 0.
-        .channel_1 = 3000, //< Duty cycle value for channel 1.
-        .channel_2 = 8000, //< Duty cycle value for channel 2.
-        .channel_3 = 20000  //< Duty cycle value for channel 3.
+        .channel_0 = 5, //< Duty cycle value for channel 0.
+        .channel_1 = 20, //< Duty cycle value for channel 1.
+        .channel_2 = 50, //< Duty cycle value for channel 2.
+        .channel_3 = 100  //< Duty cycle value for channel 3.
     };
 
     ````
@@ -121,11 +121,11 @@ One can also make individual sequences for each of the 4 PWM channels:
 
 ![PWM sequence](./images/part2/pwm_sequences.png)
 
-1. Make an array of 10 ``nrf_pwm_values_individual_t`` structures.
+1. Make an array of 5 ``nrf_pwm_values_individual_t`` structures.
 
     ````c
     // Structure for defining duty cycle values for sequences
-    static nrf_pwm_values_individual_t pwm_duty_cycle_values[10];
+    static nrf_pwm_values_individual_t pwm_duty_cycle_values[5];
     ````
 
 1. Before you start the playback, configure the sequence for PWM channel 0 like this:
@@ -143,7 +143,7 @@ One can also make individual sequences for each of the 4 PWM channels:
     pwm_duty_cycle_values[9].channel_0 = 90;
     ````
 
-1. Use the ``repeat`` field in the `nrf_pwm_sequence_t` structure to repeat each PWM value as many times as you want before incrementing to the next value in the sequence:
+1. Use the ``repeat`` field in the `nrf_pwm_sequence_t` structure to repeat each PWM value as many times as you want before incrementing to the next value in the sequence (remember that with a top value of 100 and base clock of 1 MHz, one PWM period is only 100 / 1 MHz = 0.1 ms long. I.e. you might need a large repeat count to see any difference with the naked eye):
     ````c
     static nrf_pwm_sequence_t pwm_sequence =
     {
@@ -170,7 +170,7 @@ According to the SG90's datasheet we should use a PWM signal with a 20 ms period
 
 ![PWM Servo control](./images/part2/pwm_servo_control.png)
 
-The default PWM base clock is 1 MHz, so in order to get a 20 ms period we need a counter top value for the PWM  equal to 20,000. Then, to get a 19 ms duration of logic low and a 1 ms duration of logic high, we need to set the PWM duty cycle value to 19,000. The following diagram shows the relationship between the counter top and PWM duty cycle value:
+The default PWM base clock is 1 MHz, so in order to get a 20 ms period we need a counter top value for the PWM  equal to 20,000. Then, to get a 19 ms duration of logic low and a 1 ms duration of logic high, we need to set the PWM duty cycle value to 19,000. The following diagram shows the relationship between the PWM counter, counter top, and the duty cycle value:
 
 ![PWM Counter in up mode](./images/part2/pwm_edge_polarity.png)
 

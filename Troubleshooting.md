@@ -1,0 +1,3 @@
+## The nRF52 Development kit suddenly isn't recognized by the computer.
+1. Try a different USB cable. Faulty USB cables are surprisingly often a problem.
+1. Try to disconnect the servo if you have it connected. It appears that the 5 V rail on the nRF52840 DK struggles to handle the current drawn, or the noise produced, by the servo motor. This seems to cause the Segger MCU to malfucntion. In my experience the problem seems worse when I use USB ports on my laptop or cheap USB hubs. High end USB hubs with dedicated power supply seems to work fine. 
