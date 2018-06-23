@@ -18,7 +18,7 @@ This first part of the workshop is intended to give a very quick introduction to
 
     This repository contains a slightly modified version of the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23). The example initiates the Softdevice and starts advertising, but there are no BLE services or characteristics added. The difference from the original example is just a few project settings and tweaks. I hope this will allow us to spend more time on the fun stuff and less time on "backend" settings. 
 
-1. Open up the SES project file. You should now find it in this path (**Correct file path is important!**): _"..\your_sdk_15_folder\examples\ble_peripheral\ble-workshop\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
+1. Open up the SES project file. You should now find it in this path (**Correct file path is important!**): _"..\your_sdk_15_folder\examples\ble_peripheral\ble-workshop-master\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
     * pca10056 signifies that the example uses the PCA10056 development kit, also known as nRF52840 DK. 
     * S140 signifies that the example uses Softdevice S140
 
@@ -96,7 +96,7 @@ Most of the examples in the SDK utilize the [Logger Module](http://infocenter.no
 
 
 # How to use the error handler
-One more thing that is extensively used in the SDK, and something goes hand in hand with the Logger Module, is the [Error Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_error.html?cp=4_0_0_3_13). Throughout the entire SDK you will see that functions return error codes and that these error codes can be checked with the macro: ``APP_ERROR_CHECK(error code)``.
+One more thing that is extensively used in the SDK, and something that goes hand in hand with the Logger Module, is the [Error Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_error.html?cp=4_0_0_3_13). Throughout the entire SDK you will see functions returning error codes and that these error codes can be checked with the macro: ``APP_ERROR_CHECK(error code)``.
 1. So try to add this code after the logging messages: ``APP_ERROR_CHECK(1234)``.
 
     ````c
@@ -113,7 +113,7 @@ One more thing that is extensively used in the SDK, and something goes hand in h
 
     ![Error message](./images/error_message.png)
     
-    The error message shows the error code and where the code that produced the error is located. In this case it is error number 1234 and the code that produced the error is located at line 805 in main.c.
+    The error message shows the error code and where the function that produced the error is located. In this case it is error number 1234 and the code that produced the error is located at line 805 in main.c.
 
 1. Try to replace `APP_ERROR_CHECK(1234);` with this code:
 
@@ -138,9 +138,8 @@ One more thing that is extensively used in the SDK, and something goes hand in h
 
     ![SES Debug Terminal](./images/ses_debug_terminal.png)
 
-1. Enable colors by setting ``NRF_LOG_USES_COLORS`` to 1. Your debug messages should now appear like this:
-![Colored messages](./images/color_messages.png)
+The RTT can be very useful in cases where you need the UART for other things than debugging, or in advanced applications where you can't afford to use the CPU to print messages using UART. 
 
 </details>
 
-[Link](./Part_2.md)
+[Continue to Part 2: Setting up the PWM driver.](./Part_2.md)
