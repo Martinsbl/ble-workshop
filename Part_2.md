@@ -153,7 +153,7 @@ One can also make individual sequences for each of the 4 PWM channels:
         .end_delay       = 0
     };`
     ````
-    ![PWM Value repeats](./images/part2/pwm_value_repeats.PNG)
+    ![PWM Value repeats](./images/part2/pwm_value_repeats.png)
 
 1. The LED should now keep on endlessly fading in and out. 
 
