@@ -2,7 +2,7 @@
 The goal of this workshop is to control a servo ([SG90 Datahseet](http://www.ee.ic.ac.uk/pcheung/teaching/DE1_EE/stores/sg90_datasheet.pdf)) with a phone using BLE. The angle of the servo arm is manipulated using a PWM signal with varying duty cycle, so in this next part of the workshop we will add the necessary PWM driver files to our project, initiate the drivers, and implement a simple function for controlling the servo.  
 
 ## The nRF52840's PWM Peripheral
-The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16) peripheral in the nRF52840 includes four sepparate instances, also known as modules. Each instance controls groups of four different PWM channels. This allows you to control up to 16 individual PWM channeles.
+The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16) peripheral in the nRF52840 includes four separate instances, also known as modules. Each instance controls groups of four different PWM channels. This allows you to control up to 16 individual PWM channeles.
 
 ## Adding files to our project
 1. The first thing we need to do is to add the [PWM driver's](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/hardware_driver_pwm.html?cp=4_0_0_2_0_8) source code to our project. Do that by righclicking on the "Application" folder in the Project Item vindow and click "Add Existing File":
@@ -68,7 +68,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
 1. We also explicitly need to enable instance 0 in _sdk_config.h_. Do this by searching for ``NRFX_PWM0_ENABLED`` and set it to 1.
 
-1. Declare a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put indivitual values for each the PWM channels, and set channel_0 to 1000:
+1. Declare a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put indivitual values for each the PWM channels:
 
     ````c
     // Structure for defining duty cycle values for sequences
@@ -82,16 +82,17 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
     ````
 
-1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behaviour of the sequence. 
+1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behaviour of the PWM sequence (more about sequences in the Bonus Task below). 
 
     ````c
+    // Structure for defining a sequence of PWM duty cycles
     static nrf_pwm_sequence_t pwm_sequence =
     {
         .values.p_individual = &pwm_duty_cycle_values,
         .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
         .repeats         = 0,
         .end_delay       = 0
-    };`
+    };
     ````
 
 1. Finally, in your main() function, below the line:
@@ -108,7 +109,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
     nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
     ````
     
-Now you should see that one of the LEDs lights up, but stays relatively dim compared to LED1 (which should be blinking while the kit is advertising).
+Now you should see that LED1 - LED 4 light up with different intensity.
 
 <details><summary>Bonus tasks: Play a sequence</summary>
 

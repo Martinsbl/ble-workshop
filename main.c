@@ -692,6 +692,14 @@ static void advertising_start(bool erase_bonds)
 }
 
 
+//TODO Declear a PWM driver Instance
+
+//TODO Add PWM init() function
+
+//TODO Define structure with PWM duty cycle values
+
+
+
 /**@brief Function for application main entry.
  */
 int main(void)
@@ -716,6 +724,8 @@ int main(void)
     // Start execution.
     NRF_LOG_INFO("\033[2J\033[;HWorkshop example started."); // Clear screen and show start message.
     //TODO Test out NRF_LOG module
+    
+    //TODO Initiate and playback the PWM sequence
     
     advertising_start(erase_bonds);
 
