@@ -164,7 +164,7 @@ The servo is controlled by feeding it a PWM signal and varying the duty cycle. I
 
 ![Servo connections](./images/part2/servo_connections.png)
 
-There is no particular reason to use pin P0.03 for the PWM, but it is my favourite pin because it is close to the 5 V and GND pins, and maybe more importantly, it is not used by other hardware on the kit (like crystals, NFC, etc.). 
+There is no particular reason to use pin P0.03 for the PWM, but it is my go-to pin since it is close to the 5 V and GND pins, and maybe more importantly, it is not used by other hardware on the kit (like crystals, NFC, etc.). (**Warning: The servo might be too much for the 5 V rail. If your kit malfunctions after connecting the servo, try to connect it to VDD instead of 5V.**)
 
 According to the SG90's datasheet we should use a PWM signal with a 20 ms period (50 Hz), and vary the duty cycle between 1 and 2 ms.
 
