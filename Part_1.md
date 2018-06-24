@@ -73,16 +73,10 @@ Most of the examples in the SDK utilize the [Logger Module](http://infocenter.no
 
 1. The Logger Module allows you to print messages of different severity. Try to add these three lines of code:
     ````c
-        ....
-        peer_manager_init();
-
-        // Start execution.
-        NRF_LOG_INFO("Template example started.");
-        // Add THESE LINES
-        NRF_LOG_ERROR("This is an ERROR message.");
-        NRF_LOG_WARNING("This is a WARNING message.");
-        NRF_LOG_DEBUG("This is a DEBUG message.");
-        ....
+    //TODO PART 1: Test out NRF_LOG module
+    NRF_LOG_ERROR("This is an ERROR message.");
+    NRF_LOG_WARNING("This is a WARNING message.");
+    NRF_LOG_DEBUG("This is a DEBUG message.");
     ````
 
     Now you should see this output on your terminal:
@@ -96,17 +90,13 @@ Most of the examples in the SDK utilize the [Logger Module](http://infocenter.no
 
 
 # How to use the error handler
-One more thing that is extensively used in the SDK, and something that goes hand in hand with the Logger Module, is the [Error Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_error.html?cp=4_0_0_3_13). Throughout the entire SDK you will see functions returning error codes and that these error codes can be checked with the macro: ``APP_ERROR_CHECK(error code)``.
+One more thing that is extensively used in the SDK, and something that goes hand in hand with the Logger Module, is the [Error Module](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_error.html?cp=4_0_0_3_13). Throughout the entire SDK you will see functions returning error codes and that these error codes can be checked with the macro called ``APP_ERROR_CHECK(error code)``.
+
 1. So try to add this code after the logging messages: ``APP_ERROR_CHECK(1234)``.
 
     ````c
-         // Start execution.
-        NRF_LOG_INFO("Template example started.");
-        NRF_LOG_ERROR("This is an ERROR message.");
-        NRF_LOG_WARNING("This is a WARNING message.");
-        NRF_LOG_DEBUG("This is a DEBUG message.");
-        
-        APP_ERROR_CHECK(1234);
+    //TODO PART 1: Test the error macro
+    APP_ERROR_CHECK(1234);
     ````
 
     When you run the application now, you should see an error message printed on your terminal:

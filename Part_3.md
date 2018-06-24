@@ -24,7 +24,7 @@ To save time I have taken the liberty of writing almost all of the necessary cod
     ````c
     static void services_init(void)
     {
-        //TODO Initialize the Servo Service
+        //TODO PART 3: Initialize the Servo Service
         ble_servo_service_init(&m_ble_servo);
         ...
     ````
@@ -102,7 +102,7 @@ Next we want to write values to our characteristic with nRF Connect. The Softdev
 1. To catch the write events (defined as `BLE_GATTS_EVT_WRITE` in the Softdevice API), we are going to use the function called `ble_servo_on_ble_evt()` which is defined in _ble_servo.c_. In _main.c_, there is an event handler function called `ble_evt_handler()`. When the Softdevice is being initialized, this funtion is registered as a handler for all BLE events (have a look in ``ble_stack_init()``). At the bottom of ``ble_evt_handler()``, make a call to `ble_servo_on_ble_evt()` and pass in a pointer to our `m_ble_servo` structure and a pointer to ``p_ble_evt``, which is a structure containing data about BLE events:
 
     ````c
-    //TODO Forward BLE events to ble_servo_on_ble_evt()	
+    //TODO PART 3: Forward BLE events to ble_servo_on_ble_evt()	
     ble_servo_on_ble_evt(p_ble_evt, &m_ble_servo);
     ````
 
@@ -140,11 +140,22 @@ Next we want to write values to our characteristic with nRF Connect. The Softdev
     ````c
     static void services_init(void)
     {
-        //TODO Configure Servo Service event handler 
+        //TODO PART 3: Configure Servo Service event handler 
         m_ble_servo.evt_handler = set_servo_value;
-        //TODO Initialize the Servo Service
+        //TODO PART 3: Initialize the Servo Service
         ble_servo_service_init(&m_ble_servo);
     }
+    ````
+
+    Depending on where you have defined your ``set_servo_value()`` function, you might get a compiler error complaining about 
+    
+        "'set_servo_value' undeclared (first use in this function)"
+
+    If you get this, you can make a farward declaration of ``set_servo_value()`` at the top of main:
+
+    ````c
+    //TODO PART 3: Make a forward declaration of set_servo_value()
+    void set_servo_value(uint16_t servo_value);
     ````
 
 1. Now you should see messages like these on your serial terminal:

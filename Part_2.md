@@ -30,8 +30,9 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
 1. We start by declaring a [PWM driver instance structure](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrfx__pwm__t.html?cp=4_0_0_6_9_0_12_1_1). Add this line of code somewhere at the top of main.c: 
     ````c
-        // Declare a PWM driver instance structure
-        nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
+    //TODO PART 2: Declear a PWM driver Instance
+    // Declare a PWM driver instance structure
+    nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
     ````
 
 1. Then we define a function called `init_pwm()` where we configure and initialize the peripheral. Inside the function we fill out a [PWM driver configuration structure](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk5.v15.0.0%2Fstructnrfx__pwm__config__t.html). Finally, we pass these two structures into the [PWM driver initialization function](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/group__nrfx__pwm.html#gaf06bb9053293005bc91217e5a1791261). And of course we check the return code with `APP_ERROR_CHECK(err_code)` afterwards.
@@ -39,25 +40,26 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
     Add this code to main.c: 
 
     ````c
-        // Function for initializing the PWM
-        void init_pwm(void)
-        {
-            uint32_t err_code;
-            // Declare a configuration structure and use a macro to instantiate it with default parameters.
-            nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
+    //TODO PART 2: Add PWM init() function
+    // Function for initializing the PWM
+    void init_pwm(void)
+    {
+        uint32_t err_code;
+        // Declare a configuration structure and use a macro to instantiate it with default parameters.
+        nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
 
-            // We must override some of the parameters:
-            pwm_config.output_pins[0] = LED_1; // Connect LED_1 on the nRF52840 DK to PWM Channel 0
-            pwm_config.output_pins[1] = LED_2; // Connect LED_2 on the nRF52840 DK to PWM Channel 1
-            pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 2
-            pwm_config.output_pins[3] = LED_4; // Connect LED_4 on the nRF52840 DK to PWM Channel 3
-            pwm_config.top_value    = 100; // Make PWM count from 0 - 100
-            pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
-            
-            // Pass config structure into driver init() function 
-            err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
-            APP_ERROR_CHECK(err_code);
-        }
+        // We must override some of the parameters:
+        pwm_config.output_pins[0] = LED_1; // Connect LED_1 on the nRF52840 DK to PWM Channel 0
+        pwm_config.output_pins[1] = LED_2; // Connect LED_2 on the nRF52840 DK to PWM Channel 1
+        pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 2
+        pwm_config.output_pins[3] = LED_4; // Connect LED_4 on the nRF52840 DK to PWM Channel 3
+        pwm_config.top_value    = 100; // Make PWM count from 0 - 100
+        pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
+        
+        // Pass config structure into driver init() function 
+        err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
+        APP_ERROR_CHECK(err_code);
+    }
     ````
 
 1. Try to compile. If you have followed the tutorial it should fail with this error:
@@ -71,6 +73,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 1. Declare a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put indivitual values for each the PWM channels:
 
     ````c
+    //TODO PART 2: Define structure with PWM duty cycle values
     // Structure for defining duty cycle values for sequences
     static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
     {
@@ -85,6 +88,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behaviour of the PWM sequence (more about sequences in the Bonus Task below). 
 
     ````c
+    //TODO PART 2: Define structure with PWM sequence info
     // Structure for defining a sequence of PWM duty cycles
     static nrf_pwm_sequence_t pwm_sequence =
     {
@@ -95,16 +99,10 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
     };
     ````
 
-1. Finally, in your main() function, below the line:
-
-    ````c
-    // Start execution.
-    NRF_LOG_INFO("Template example started.");
-    ````
-
-    call the PWM initialization function and start the PWM "playback" of our sequence: 
+1. Finally, in your main() function, call the PWM initialization function and start the PWM "playback" of our sequence: 
     
     ````c
+    //TODO PART 2: Initiate and playback the PWM sequence
     init_pwm();
     nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
     ````

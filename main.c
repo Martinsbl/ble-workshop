@@ -74,7 +74,6 @@
 #include "sensorsim.h"
 #include "ble_conn_state.h"
 #include "nrf_ble_gatt.h"
-#include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
 
 #include "nrf_log.h"
@@ -83,7 +82,9 @@
 #include "nrf_delay.h"
 
 
-// TODO Include nrfx_pwm.h
+// TODO PART 2: Include nrfx_pwm.h
+
+// TODO PART 3: Include ble_servo.h
 
 #define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
@@ -115,7 +116,6 @@
 
 
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
-NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
@@ -123,9 +123,9 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 static void advertising_start(bool erase_bonds);
 
 
-//TODO Decleare ble_servo_t variable
+//TODO PART 3: Decleare ble_servo_t variable
 
-//TODO Make a forward declaration of set_servo_value()
+//TODO PART 3: Make a forward declaration of set_servo_value()
 
 
 /**@brief Callback function for asserts in the SoftDevice.
@@ -311,18 +311,9 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
  */
 static void services_init(void)
 {
-    ret_code_t         err_code;
-    nrf_ble_qwr_init_t qwr_init = {0};
+    //TODO PART 3: Configure Servo Service event handler 
 
-    // Initialize Queued Write Module.
-    qwr_init.error_handler = nrf_qwr_error_handler;
-
-    err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
-    APP_ERROR_CHECK(err_code);
-    
-    //TODO Configure Servo Service event handler 
-
-    //TODO Initialize the Servo Service
+    //TODO PART 3: Initialize the Servo Service
 
 }
 
@@ -452,8 +443,6 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
-            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -489,7 +478,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             break;
     }
 	
-    //TODO Forward BLE events to ble_servo_on_ble_evt()
+    //TODO PART 3: Forward BLE events to ble_servo_on_ble_evt()
 }
 
 
@@ -703,13 +692,15 @@ static void advertising_start(bool erase_bonds)
 }
 
 
-//TODO Declear a PWM driver Instance
+//TODO PART 2: Declear a PWM driver Instance
 
-//TODO Add PWM init() function
+//TODO PART 2: Add PWM init() function
 
-//TODO Define structure with PWM duty cycle values
+//TODO PART 2: Define structure with PWM duty cycle values
 
-//TODO Define structure with PWM sequence infp
+//TODO PART 2: Define structure with PWM sequence info
+
+//TODO PART 2: Make a function that adjusts the PWM duty cycle.
 
 /**@brief Function for application main entry.
  */
@@ -734,9 +725,10 @@ int main(void)
 
     // Start execution.
     NRF_LOG_INFO("\033[2J\033[;HWorkshop example started."); // Clear screen and show start message.
-    //TODO Test out NRF_LOG module
+    //TODO PART 1: Test out NRF_LOG module
+    //TODO PART 1. Test the error macro
     
-    //TODO Initiate and playback the PWM sequence
+    //TODO PART 2: Initiate and playback the PWM sequence
     
     advertising_start(erase_bonds);
 
