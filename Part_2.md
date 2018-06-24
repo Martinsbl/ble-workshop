@@ -203,23 +203,6 @@ Back to the code again:
 
 1. Try to change the duty cycle value to 18,000, and see if something happens. The servo should move to a new position and then stay still. 
 
-1. Try to make a simple for-loop and move the servo back and forth:
-
-    ````c
-    
-    for(int i = 0; i < 4; i++)
-    {
-        nrf_delay_ms(500); // Delay of 500 ms
-        pwm_duty_cycle_values.channel_0 = 18000;
-        nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-        
-        nrf_delay_ms(500); // Delay of 500 ms
-        pwm_duty_cycle_values.channel_0 = 19000;
-        nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
-    }
-    ````
-
-
 1. Try to make a function called `set_servo_value()` that adjusts the PWM duty cycle. It should accept a ``uint16_t`` variable called `servo_value`, and make sure that the new servo value is between 18,000 and 19,000. 
 
     ````c
@@ -255,6 +238,22 @@ Back to the code again:
     ````
 
     </details>
+    
+1. Try to make a simple for-loop and move the servo back and forth:
+
+    ````c
+    
+    for(int i = 0; i < 4; i++)
+    {
+        nrf_delay_ms(500); // Delay of 500 ms
+        set_servo_value(18000);
+        
+        nrf_delay_ms(500); // Delay of 500 ms
+        set_servo_value(19000);
+    }
+    ````
+
+
 
 <details><summary>Bonus tasks: Control the servo with a sequence</summary>
 
