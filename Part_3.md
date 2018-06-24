@@ -115,19 +115,44 @@ Next we want to write values to our characteristic with nRF Connect. The Softdev
 
     1. It extracts the relevant parameters and varaiables, like the data lenght and the data itself, from the `p_ble_evt` structure.
     1. It checks whether the write event writes data to our Servo characteristic. 
-    1. If the write event does indeed write data to our Servo characteristic, 
+    1. If the write event does indeed concern our Servo characteristic, it assembles the received data. 
+    1. It prints some information messages to the Logger module (watch out for those in your terminal).
+    1. Forwards the received servo value to the Servo Service event handler. 
 
-![nRF Connect first connect](./images/part3/nrfconnect_write_data.jpg)
+
+1. To write data to our characteristic using nRFConnect for Mobile, click the upwards facing arrow to the right of our characteristic:
+
+    ![nRF Connect write](./images/part3/nrfconnect_write_arrow.png)
+1. Then type in the value you want to send. Note that the value is in hexadecimal format:
+
+    ![nRF Connect first connect](./images/part3/nrfconnect_write_bytes.jpg)
+
+    Remember that the servo value is 16 bit wide.  
+
+1. Click send. Did anything happen? If things are going according to plan you should see this on your terminal:
+
+    ![Data received](./images/part3/data_received.png)
 
 ## Control the servo
 
-1. 
+1. Now there is just one more thing to do. We need to make sure that our Servo Service event handler is calling the ``set_servo_value()`` function that we created previously. Do this by going back to `services_init()` in _main.c_ and make `m_ble_servo.evt_handler` point to the function like this:
 
-18,000 DEC = 0x4680 HEX
-19,000 DEC = 0x4A38 HEX
+    ````c
+    static void services_init(void)
+    {
+        //TODO Configure Servo Service event handler 
+        m_ble_servo.evt_handler = set_servo_value;
+        //TODO Initialize the Servo Service
+        ble_servo_service_init(&m_ble_servo);
+    }
+    ````
 
+1. Now you should see messages like these on your serial terminal:
 
-# Bonus tasks
-<details><summary>Use nRF Tools and UART app to assign values to buttons</summary>
+    ![Servo data](./images/part3/servo_value_received.png)
 
-</details>
+    And if you have your servo connected, it should jump around when you send your data. 
+
+    Minimum servo value: 18,000 DEC = 0x4680 HEX
+
+    Maximum servo value: 19,000 DEC = 0x4A38 HEX
