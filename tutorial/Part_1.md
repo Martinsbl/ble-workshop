@@ -2,7 +2,7 @@
 This first part of the workshop is intended to give a very quick introduction to the look and feel of Segger Embedded Studio and to give you an idea about how it is to work with Nordic's SDK. 
 
 ## Open and build a project
-1. Make sure that you have downloaded and extracted SDK 15 to your harddrive. <span style="color:red">Make sure that the path to the SDK folder isn't too long</span>, or your projects might not compile. For example, this
+1. Make sure that you have downloaded and extracted SDK 15 to your hard drive. <span style="color:red">Make sure that the path to the SDK folder isn't too long</span>, or your projects might not compile. For example, this
 
     _"C:\SDK_15\"_
 
@@ -16,26 +16,26 @@ This first part of the workshop is intended to give a very quick introduction to
     - Or download the repository as a .zip file and extract it to this folder.
         ![Download and Extract](./images/download_zip.png)
 
-    This repository contains a slightly modified version of the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23). The example initiates the Softdevice and starts advertising, but there are no BLE services or characteristics added. The difference from the original example is just a few project settings and tweaks. I hope this will allow us to spend more time on the fun stuff and less time on "backend" settings. 
+    This repository contains a slightly modified version of the [BLE Template Application](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/ble_sdk_app_template.html?cp=4_0_0_4_1_2_23). The example initiates the SoftDevice  and starts advertising, but there are no BLE services or characteristics added. The difference from the original example is just a few project settings and tweaks. I hope this will allow us to spend more time on the fun stuff and less time on "backend" settings. 
 
 1. Open up the SES project file. You should now find it in this path (**Correct file path is important!**): _"..\your_sdk_15_folder\examples\ble_peripheral\ble-workshop-master\pca10056\s140\ses\ble_app_template_pca10056_s140.emProject"_
     * pca10056 signifies that the example uses the PCA10056 development kit, also known as nRF52840 DK. 
-    * S140 signifies that the example uses Softdevice S140
+    * S140 signifies that the example uses SoftDevice  S140
 
 1. To build your project, click 'Build->Build "_name of project_"' (or click F7 on windows).
     
     ![Build project](./images/build.png)
 
-1. When the build finishes, notice how SES shows you how much Flash and RAM is being used by your application (the output window says we are using 192 KB of flash, but note that this includes the S140 Softdevice which is 152 kB alone).
+1. When the build finishes, notice how SES shows you how much Flash and RAM is being used by your application (the output window says we are using 192 KB of flash, but note that this includes the S140 SoftDevice which is 152 kB alone).
     
     ![Initial build](./images/initial_build.png)
 
 ## Test the example code
-1. Now let us test the example code. Click 'Target->Download "_name of project_"'. This will program both the Softdevice and the application code to your nRF52840 DK. 
+1. Now let us test the example code. Click 'Target->Download "_name of project_"'. This will program both the SoftDevice  and the application code to your nRF52840 DK. 
 
     ![Program target](./images/download_application.png)
 
-1. You should now see that LED1 on the nRF52840 DK is blinking periodically. This indicates that the application is running and the device is advertising. 
+1. You should now see that LED1 on the nRF52840 DK is blinking periodically. This indicates that the application is running, and that the device is advertising. 
 
 1. Open up [nRF Connect for Mobile](https://www.nordicsemi.com/eng/Products/Nordic-mobile-Apps/nRF-Connect-for-Mobile) and start scanning. Your device should show up in the device list:
 
@@ -63,13 +63,13 @@ Most of the examples in the SDK utilize the [Logger Module](http://infocenter.no
 
     ![Serial logging](./images/putty.png)
 
-    If you don't see any messages you might need to reset the application by pressing the BOOT/RESET button on the kit.
+    If you don't see any messages, you might need to reset the application by pressing the BOOT/RESET button on the kit.
 
 1. Set the build configuration to 'Debug'. This will provide more useful information to be printed out to serial terminals, and it also makes it easier to step through your code with a debugger. 
 
     ![Debug Build Configuration](./images/debug_build_config.png)
 
-1. Recompile your project and notice how this signifficantly increases the code size. 
+1. Recompile your project and notice how this significantly increases the code size. 
 
 1. The Logger Module allows you to print messages of different severity. Try to add these three lines of code:
     ````c

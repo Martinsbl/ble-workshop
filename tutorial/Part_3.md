@@ -1,7 +1,7 @@
 # Part 3: Adding a BLE Service
-In this part we will add a service and a characteristic that we can use to control our servo. Adding services and characteristics can be a complex task with a lot of things to consider, such as security aspects, characteristic properties, etc. However, since this workshop is so short we will just power through and skip everything that has to do with security and low level configurations, and just implement the bare minimum of what we need. 
+In this part we will add a service and a characteristic that we can use to control our servo. Adding services and characteristics can be a complex task with a lot of things to consider, such as security aspects, characteristic properties, etc. However, since this workshop is so short we will just power through and skip everything that has to do with security and low-level configurations, and just implement the bare minimum of what we need. 
 
-To save time I have taken the liberty of writing almost all of the necessary code. However, we will go through the process of 
+To save time I have taken the liberty of writing almost all the necessary code. However, we will go through the process of 
 
 ## Initialize the service
 
@@ -19,7 +19,7 @@ To save time I have taken the liberty of writing almost all of the necessary cod
     - Information about the service's base UUID
     - A reference to an event handler function
 
-1. To initialize the Servo Service, simply call ``ble_servo_service_init()`` and pass in a pointer to our servo structure. In the SDK, all services are usually initialized in a common function called ``services_init()`` located in _main.c_. So do something like this:
+1. To initialize the Servo Service, simply call ``ble_servo_service_init()`` and pass in a pointer to our servo structure. In the SDK, all services are usually initialized in a common function called ``services_init()`` located in _main.c_. So, do something like this:
 
     ````c
     static void services_init(void)
@@ -31,14 +31,14 @@ To save time I have taken the liberty of writing almost all of the necessary cod
 
 1. ``ble_servo_service_init()`` is defined in _ble_servo.c_ and it does two things:
     
-    1. It uses [sd_ble_uuid_vs_add()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___c_o_m_m_o_n___f_u_n_c_t_i_o_n_s.html#ga265b4251110a15120d0aa97e5152163b) to add a vendor specific base UUID to the BLE stack's table of UUIDs, for later use with all other modules and APIs. Our UUIDs are defined in _ble_servo.h_ and the base UUID, ``SERVO_BASE_UUID``, is F364xxxx-01B0-4240-BA50-05CA55BF8ABC and the 16 bit alias UUID for the service, ``SERVO_SERVICE_UUID``, is 0x5E55.
+    1. It uses [sd_ble_uuid_vs_add()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___c_o_m_m_o_n___f_u_n_c_t_i_o_n_s.html#ga265b4251110a15120d0aa97e5152163b) to add a vendor specific base UUID to the BLE stack's table of UUIDs, for later use with all other modules and APIs. Our UUIDs are defined in _ble_servo.h_ and the base UUID, ``SERVO_BASE_UUID``, is F364xxxx-01B0-4240-BA50-05CA55BF8ABC and the 16-bit alias UUID for the service, ``SERVO_SERVICE_UUID``, is 0x5E55.
     2. It uses [sd_ble_gatts_service_add()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___g_a_t_t_s___f_u_n_c_t_i_o_n_s.html#ga39fea660228e4b2e788af7018a83927a) to add a service declaration to the Attribute Table
 
 1. When you now compile and download your code you might see an error like this:
 
     ![No mem](./images/part3/error_no_mem.png)
 
-1. So what is this? The amount or RAM required by the Softdevice is dependend on how you configure it. More links and higher throughputs require more RAM. A large attribute table with lots of services and/or characteristics also requires more RAM. What is happening here, is that [sd_ble_uuid_vs_add()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___c_o_m_m_o_n___f_u_n_c_t_i_o_n_s.html#ga265b4251110a15120d0aa97e5152163b) is returning error NRF_ERROR_NO_MEM because we have not told the Softdevice to allocate memory for vendor specific UUIDs.
+1. So what is this? The amount or RAM required by the SoftDevice  is dependent on how you configure it. More links and higher throughputs require more RAM. A large attribute table with lots of services and/or characteristics also requires more RAM. What is happening here, is that [sd_ble_uuid_vs_add()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___c_o_m_m_o_n___f_u_n_c_t_i_o_n_s.html#ga265b4251110a15120d0aa97e5152163b) is returning error NRF_ERROR_NO_MEM because we have not told the SoftDevice  to allocate memory for vendor specific UUIDs.
 
 1. To allocate more RAM to the Softdeivce, it needs to know how many vendor specific UUIDs we are going to use. We do this in _sdk_config.h_ by setting:
 
@@ -50,7 +50,7 @@ To save time I have taken the liberty of writing almost all of the necessary cod
 
     ![Error RAM](./images/part3/error_ram.png)
 
-1. This error basically tells us that we have allocated too little RAM for the Softdevice in our project settings. So once again, go to Edit Options and do as the error says; change 
+1. This error basically tells us that we have allocated too little RAM for the SoftDevice  in our project settings. So once again, go to Edit Options and do as the error says; change 
 RAM_START and RAM_SIZE to 0x20002220 and 0x3dde0 respectively:
     ![Change RAM settings](./images/part3/linker_options.png)
 
@@ -84,7 +84,7 @@ So let us add something to our service.
     1. In enables write properties. 
     1. It leaves the doors wide open for everyone to write to our characteristic with the macro ``BLE_GAP_CONN_SEC_MODE_SET_OPEN()`` (no security at all)
     1. It disables read permissions.
-    1. It configures the Softdevice to store our charactersitic values in memory controlled by the Softdevice (stack). 
+    1. It configures the SoftDevice  to store our characteristic values in memory controlled by the SoftDevice  (stack). 
     1. It configures the initial and maximum length of our characteristic values. In our case we only need to fit a 16 bit wide ``uint16_t`` variable to control our servo. 
     1. It uses [sd_ble_gatts_characteristic_add](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.s132.api.v6.0.0/group___b_l_e___g_a_t_t_s___f_u_n_c_t_i_o_n_s.html#ga9ee07ea4b96dcca1537b01ff9a7692ba) to add a characteristic declaration and a characteristic value declaration to the attribute database.
 
@@ -97,9 +97,9 @@ So let us add something to our service.
 
 
 ## Receive BLE Write events
-Next we want to write values to our characteristic with nRF Connect. The Softdevice is completely event driver, and whenever we write any data to any characteristic the Softdevice will generate a write event. What we need to do is to reponse to listen for the write event and whenever such an event occur we need to figure out which characteristic was written to. 
+Next we want to write values to our characteristic with nRF Connect. The SoftDevice  is completely event driver, and whenever we write any data to any characteristic the SoftDevice  will generate a write event. What we need to do is to response to listen for the write event and whenever such an event occur we need to figure out which characteristic was written to. 
 
-1. To catch the write events (defined as `BLE_GATTS_EVT_WRITE` in the Softdevice API), we are going to use the function called `ble_servo_on_ble_evt()` which is defined in _ble_servo.c_. In _main.c_, there is an event handler function called `ble_evt_handler()`. When the Softdevice is being initialized, this funtion is registered as a handler for all BLE events (have a look in ``ble_stack_init()``). At the bottom of ``ble_evt_handler()``, make a call to `ble_servo_on_ble_evt()` and pass in a pointer to our `m_ble_servo` structure and a pointer to ``p_ble_evt``, which is a structure containing data about BLE events:
+1. To catch the write events (defined as `BLE_GATTS_EVT_WRITE` in the SoftDevice  API), we are going to use the function called `ble_servo_on_ble_evt()` which is defined in _ble_servo.c_. In _main.c_, there is an event handler function called `ble_evt_handler()`. When the SoftDevice is being initialized, this function is registered as a handler for all BLE events (have a look in ``ble_stack_init()``). At the bottom of ``ble_evt_handler()``, make a call to `ble_servo_on_ble_evt()` and pass in a pointer to our `m_ble_servo` structure and a pointer to ``p_ble_evt``, which is a structure containing data about BLE events:
 
     ````c
     //TODO PART 3: Forward BLE events to ble_servo_on_ble_evt()	
@@ -113,21 +113,21 @@ Next we want to write values to our characteristic with nRF Connect. The Softdev
 
 1. The function ``on_write_event()`` does a couple of things:
 
-    1. It extracts the relevant parameters and varaiables, like the data lenght and the data itself, from the `p_ble_evt` structure.
+    1. It extracts the relevant parameters and variables, like the data length and the data itself, from the `p_ble_evt` structure.
     1. It checks whether the write event writes data to our Servo characteristic. 
     1. If the write event does indeed concern our Servo characteristic, it assembles the received data. 
     1. It prints some information messages to the Logger module (watch out for those in your terminal).
     1. Forwards the received servo value to the Servo Service event handler. 
 
 
-1. To write data to our characteristic using nRFConnect for Mobile, click the upwards facing arrow to the right of our characteristic:
+1. To write data to our characteristic using nRF Connect for Mobile, click the upwards facing arrow to the right of our characteristic:
 
     ![nRF Connect write](./images/part3/nrfconnect_write_arrow.png)
 1. Then type in the value you want to send. Note that the value is in hexadecimal format:
 
     ![nRF Connect first connect](./images/part3/nrfconnect_write_bytes.jpg)
 
-    Remember that the servo value is 16 bit wide.  
+    Remember that the servo value is 16 bits wide.  
 
 1. Click send. Did anything happen? If things are going according to plan you should see this on your terminal:
 
@@ -151,7 +151,7 @@ Next we want to write values to our characteristic with nRF Connect. The Softdev
     
         "'set_servo_value' undeclared (first use in this function)"
 
-    If you get this, you can make a farward declaration of ``set_servo_value()`` at the top of main:
+    If you get this, you can make a forward declaration of ``set_servo_value()`` at the top of main:
 
     ````c
     //TODO PART 3: Make a forward declaration of set_servo_value()

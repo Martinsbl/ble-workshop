@@ -2,10 +2,10 @@
 The goal of this workshop is to control a servo ([SG90 Datahseet](http://www.ee.ic.ac.uk/pcheung/teaching/DE1_EE/stores/sg90_datasheet.pdf)) with a phone using BLE. The angle of the servo arm is manipulated using a PWM signal with varying duty cycle, so in this next part of the workshop we will add the necessary PWM driver files to our project, initiate the drivers, and implement a simple function for controlling the servo.  
 
 ## The nRF52840's PWM Peripheral
-The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16) peripheral in the nRF52840 includes four separate instances, also known as modules. Each instance controls groups of four different PWM channels. This allows you to control up to 16 individual PWM channeles.
+The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16) peripheral in the nRF52840 includes four separate instances, also known as modules. Each instance controls groups of four different PWM channels. This allows you to control up to 16 individual PWM channels.
 
 ## Adding files to our project
-1. The first thing we need to do is to add the [PWM driver's](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/hardware_driver_pwm.html?cp=4_0_0_2_0_8) source code to our project. Do that by righclicking on the "Application" folder in the Project Item vindow and click "Add Existing File":
+1. The first thing we need to do is to add the [PWM driver's](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/hardware_driver_pwm.html?cp=4_0_0_2_0_8) source code to our project. Do that by righ-clicking on the "Application" folder in the Project Item window and click "Add Existing File":
 
     ![Add existing file](./images/part2/add_file.png)
 
@@ -26,7 +26,7 @@ The [PWM](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.
 Now we should be ready to use the PWM driver in our project. 
 
 ## Initialize the PWM driver
-Many of the drivers and libraries in Nordic's SDK are configured and initialized by filling out a configuration structure which is then passed into a driver init() function. In many cases, the configuration structure includes sub-structures and dozens of parameters. Luckily, the parameters usually defaults to 0, so usually you will get away with configuring only the parameters that matters to you. There migh also be macros you can use to fill out the parameters. This is how we are going to configure the PWM driver as well. 
+Many of the drivers and libraries in Nordic's SDK are configured and initialized by filling out a configuration structure which is then passed into a driver init() function. In many cases, the configuration structure includes sub-structures and dozens of parameters. Luckily, the parameters usually defaults to 0, so usually you will get away with configuring only the parameters that matters to you. There might also be macros you can use to fill out the parameters. This is how we are going to configure the PWM driver as well. 
 
 1. We start by declaring a [PWM driver instance structure](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrfx__pwm__t.html?cp=4_0_0_6_9_0_12_1_1). Add this line of code somewhere at the top of main.c: 
     ````c
@@ -54,7 +54,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
         pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 2
         pwm_config.output_pins[3] = LED_4; // Connect LED_4 on the nRF52840 DK to PWM Channel 3
         pwm_config.top_value    = 100; // Make PWM count from 0 - 100
-        pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use indivitual duty cycle for each PWM channel
+        pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use individual duty cycle for each PWM channel
         
         // Pass config structure into driver init() function 
         err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
@@ -70,7 +70,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
 1. We also explicitly need to enable instance 0 in _sdk_config.h_. Do this by searching for ``NRFX_PWM0_ENABLED`` and set it to 1.
 
-1. Declare a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put indivitual values for each the PWM channels:
+1. Declare a static [nrf_pwm_values_individual_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__values__individual__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%76%61%6c%75%65%73%5f%69%6e%64%69%76%69%64%75%61%6c%5f%74%22%20) structure where we can put individual values for each the PWM channels:
 
     ````c
     //TODO PART 2: Define structure with PWM duty cycle values
@@ -85,7 +85,7 @@ Many of the drivers and libraries in Nordic's SDK are configured and initialized
 
     ````
 
-1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behaviour of the PWM sequence (more about sequences in the Bonus Task below). 
+1. Then declare a static [nrf_pwm_sequence_t](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/structnrf__pwm__sequence__t.html?resultof=%22%6e%72%66%5f%70%77%6d%5f%73%65%71%75%65%6e%63%65%5f%74%22%20) structure where we can define the behavior of the PWM sequence (more about sequences in the Bonus Task below). 
 
     ````c
     //TODO PART 2: Define structure with PWM sequence info
@@ -111,7 +111,7 @@ Now you should see that LED1 - LED 4 light up with different intensity.
 
 <details><summary>Bonus tasks: Play a sequence</summary>
 
-The PWM peripheral is quite complex and flexible. For example, you can store a sequence of PWM duty cycles in RAM and have the PWM cycle through these autonomuously using [EasyDMA](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16_1#concept_wxj_hnw_nr). This allows you to make complex PWM patterns without involving the CPU to update the duty cycle all the time. For example, you can make a sequence that fades an LED repeatedly without using the CPU at all:
+The PWM peripheral is quite complex and flexible. For example, you can store a sequence of PWM duty cycles in RAM and have the PWM cycle through these autonomously using [EasyDMA](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.nrf52840.ps/pwm.html?cp=2_0_0_5_16_1#concept_wxj_hnw_nr). This allows you to make complex PWM patterns without involving the CPU to update the duty cycle all the time. For example, you can make a sequence that fades an LED repeatedly without using the CPU at all:
 
 ![PWM sequence](./images/part2/pwm_sequence.png)
 
@@ -158,7 +158,7 @@ One can also make individual sequences for each of the 4 PWM channels:
 </details>
 
 ## Test the servo
-The servo is controlled by feeding it a PWM signal and varying the duty cycle. It has three wires comming out of it which are for 5 V supply voltage, ground, and a PWM signal. So start by connecting it like this:
+The servo is controlled by feeding it a PWM signal and varying the duty cycle. It has three wires coming out of it which are for 5 V supply voltage, ground, and a PWM signal. So start by connecting it like this:
 
 ![Servo connections](./images/part2/servo_connections.png)
 
@@ -168,7 +168,7 @@ According to the SG90's datasheet we should use a PWM signal with a 20 ms period
 
 ![PWM Servo control](./images/part2/pwm_servo_control.png)
 
-The default PWM base clock is 1 MHz, so in order to get a 20 ms period we need a counter top value for the PWM  equal to 20,000. Then, to get a 19 ms duration of logic low and a 1 ms duration of logic high, we need to set the PWM duty cycle value to 19,000. The following diagram shows the relationship between the PWM counter, counter top, and the duty cycle value:
+The default PWM base clock is 1 MHz, so in order to get a 20 ms period we need a counter top value for the PWM equal to 20,000. Then, to get a 19 ms duration of logic low and a 1 ms duration of logic high, we need to set the PWM duty cycle value to 19,000. The following diagram shows the relationship between the PWM counter, counter top, and the duty cycle value:
 
 ![PWM Counter in up mode](./images/part2/pwm_edge_polarity.png)
 
@@ -199,7 +199,7 @@ Back to the code again:
 
 1. Compile and download your code. Dependent on what position the servo was already in, you might see it move to its new position, and then stay still again. 
 
-1. Try to change the duty cycle value to 18,000, and see if something happens. The servo should move to a new position and then stay still. 
+1. Try to change the duty cycle value to 18,000 and see if something happens. The servo should move to a new position and then stay still. 
 
 
 ## Implement function to control servo
