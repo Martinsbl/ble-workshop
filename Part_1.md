@@ -44,7 +44,7 @@ This first part of the workshop is intended to give a very quick introduction to
 1. You might want to make the advertising name more unique to help recognize your device. You can do this by modifying the ``DEVICE_NAME`` define in main.c:
 
     ```c
-        #define DEVICE_NAME "Unique name"  /**< Name of device. Will be included in the advertising data. */
+    #define DEVICE_NAME "Unique name"  /**< Name of device. Will be included in the advertising data. */
     ```
     After recompiling and reprogramming the project, your device should appear with its new name in the list.
 
@@ -55,7 +55,7 @@ Most of the examples in the SDK utilize the [Logger Module](http://infocenter.no
 1. Make sure that the Logger Module is enabled by searching for ``NRF_LOG_ENABLED`` in _sdk_config.h_ and make sure it is defined as 1.
 
     ````c
-        #define NRF_LOG_ENABLED 1
+    #define NRF_LOG_ENABLED 1
     ````
 1. Next, make sure that UART is selected as backend for the Logger Module by setting `NRF_LOG_BACKEND_UART_ENABLED` to 1. Recompile your code and reprogram your kit.
 
@@ -108,8 +108,8 @@ One more thing that is extensively used in the SDK, and something that goes hand
 1. Try to replace `APP_ERROR_CHECK(1234);` with this code:
 
     ````c
-        uint32_t err_code = nrf_sdh_enable_request();
-        APP_ERROR_CHECK(err_code);
+    uint32_t err_code = nrf_sdh_enable_request();
+    APP_ERROR_CHECK(err_code);
     ````
 
     What happens now? You should get another error:

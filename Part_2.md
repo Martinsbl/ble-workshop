@@ -201,6 +201,9 @@ Back to the code again:
 
 1. Try to change the duty cycle value to 18,000, and see if something happens. The servo should move to a new position and then stay still. 
 
+
+## Implement function to control servo
+
 1. Try to make a function called `set_servo_value()` that adjusts the PWM duty cycle. It should accept a ``uint16_t`` variable called `servo_value`, and make sure that the new servo value is between 18,000 and 19,000. 
 
     ````c
@@ -285,5 +288,3 @@ Back to the code again:
 1. The servo should now iterate through 4 different angles in an endless loop. 
 
 </details>
-
-## Implement function to control servo
