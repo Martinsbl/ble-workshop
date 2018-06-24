@@ -219,6 +219,43 @@ Back to the code again:
     }
     ````
 
+
+1. Try to make a function called `set_servo_value()` that adjusts the PWM duty cycle. It should accept a ``uint16_t`` variable called `servo_value`, and make sure that the new servo value is between 18,000 and 19,000. 
+
+    ````c
+    void set_servo_value(uint16_t servo_value)
+    {
+        ...
+    ````
+
+    <details><summary>Solution</summary>
+
+    ````c
+    void set_servo_value(uint16_t servo_value)
+    {
+        uint16_t new_servo_value;
+        if(servo_value < 18000)
+        {
+            new_servo_value = 18000;
+        }
+        else if(servo_value > 19000)
+        {
+            new_servo_value = 19000;
+        }
+        else
+        {
+            new_servo_value = servo_value;
+        }
+
+        pwm_duty_cycle_values.channel_0 = new_servo_value;
+        
+        NRF_LOG_INFO("Received value %d, setting servo to: %d", servo_value, new_servo_value);
+        nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+    }
+    ````
+
+    </details>
+
 <details><summary>Bonus tasks: Control the servo with a sequence</summary>
 
 1. Make a new array of 4 ``nrf_pwm_values_individual_t`` structures.
