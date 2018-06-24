@@ -488,6 +488,8 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             // No implementation needed.
             break;
     }
+	
+    //TODO Forward BLE events to ble_servo_on_ble_evt()
 }
 
 
