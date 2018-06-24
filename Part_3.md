@@ -1,8 +1,15 @@
 # Part 3: Adding a BLE Service
 In this part we will add a service and a characteristic that we can use to control our servo. Adding services and characteristics can be a complex task with a lot of things to consider, such as security aspects, characteristic properties, etc. However, since this workshop is so short we will just power through and skip everything that has to do with security and low level configurations, and just implement the bare minimum of what we need. 
 
-1. Add ble_servo.c to your project files and include 
+1. First, add _ble_servo.c_ to your project files. It should be located in the project's root folder together with main.c. 
 
+## Initialize the service
+
+## Initialize the characteristic
+
+## Receive BLE Write events
+
+## Control the servo
 
 1. When you now compile and download your code you might see an error like this:
 
@@ -33,8 +40,8 @@ RAM_START and RAM_SIZE to 0x20002220 and 0x3dde0 respectively:
 
 1. 
 
-18000 DEC = 0x4680 HEX
-19000 DEC = 0x4A38 HEX
+18,000 DEC = 0x4680 HEX
+19,000 DEC = 0x4A38 HEX
 
 
 # Bonus tasks

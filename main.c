@@ -123,6 +123,11 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 static void advertising_start(bool erase_bonds);
 
 
+//TODO Decleare ble_servo_t variable
+
+//TODO Make a forward declaration of set_servo_value()
+
+
 /**@brief Callback function for asserts in the SoftDevice.
  *
  * @details This function will be called in case of an assert in the SoftDevice.
@@ -314,6 +319,10 @@ static void services_init(void)
 
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
+    
+    //TODO Configure Servo Service event handler 
+
+    //TODO Initialize the Servo Service
 
 }
 
