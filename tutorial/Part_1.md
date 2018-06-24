@@ -119,8 +119,7 @@ One more thing that is extensively used in the SDK, and something that goes hand
     Here you can see that we get error 8 in return when we call the function ``nrf_sdh_enable_request()``. When you get errors like this, the first thing you should do is to go to [infocenter.nordicsemi.com](http://infocenter.nordicsemi.com/) and look up the documentation for the function that returned the error. The documentation for [nrf_sdh_enable_request()](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/group__nrf__sdh.html#ga574d17fdf1c59dec6355e3f525c484ec) tells us that we get error 8, ``NRF_ERROR_INVALID_STATE``, because the SoftDevice is already enabled.
 
 
-# Bonus tasks
-<details><summary>Use RTT as backend</summary>
+<details><summary>Bonus task: Use RTT as backend</summary>
 
 1. Disable UART as backend by setting `NRF_LOG_BACKEND_UART_ENABLED` to 0 and instead turn on the RTT backend by setting `NRF_LOG_BACKEND_RTT_ENABLED` to 1. Recompile your code.
 
@@ -131,5 +130,7 @@ One more thing that is extensively used in the SDK, and something that goes hand
 The RTT can be very useful in cases where you need the UART for other things than debugging, or in advanced applications where you can't afford to use the CPU to print messages using UART. 
 
 </details>
+
+---
 
 [Continue to Part 2: Setting up the PWM driver.](./Part_2.md)

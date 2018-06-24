@@ -12,6 +12,7 @@ The goal of this part is to learn how to use the drivers in the SDK. To do that,
 [Part 3: Adding a BLE Service.](./tutorial/Part_3.md)
 In this part we will take a quick look at how to set up a GATT service and characteristic using the SDK. The goal is to use nRF Connect for mobile to send commands via BLE to control the servo.
 
+---
 
 ## Troubleshooting 
 If you run into technical problems, please have a look at the troubleshooting page:

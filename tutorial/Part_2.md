@@ -288,3 +288,7 @@ Back to the code again:
 1. The servo should now iterate through 4 different angles in an endless loop. 
 
 </details>
+
+----
+
+[Continue to Part 3: Adding a BLE Service.](./Part_3.md)
