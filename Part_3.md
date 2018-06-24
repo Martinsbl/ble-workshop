@@ -29,4 +29,15 @@ RAM_START and RAM_SIZE to 0x20002220 and 0x3dde0 respectively:
 
     ![First connection](./images/part3/first_connection.png)
 
-    
+
+
+1. 
+
+18000 DEC = 0x4680 HEX
+19000 DEC = 0x4A38 HEX
+
+
+# Bonus tasks
+<details><summary>Use nRF Tools and UART app to assign values to buttons</summary>
+
+</details>
