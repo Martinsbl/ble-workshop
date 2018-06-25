@@ -42,8 +42,12 @@ void on_write_event(ble_evt_t const * p_ble_evt, ble_servo_t * p_ble_servo)
 	NRF_LOG_INFO("Value: 0x%04X (%d)", new_servo_value, new_servo_value);
 	NRF_LOG_INFO("Data lenght: %d", data_length);
 	
-	// Call the Servo Service event handler. This should call set_servo_value() in main.c
-	p_ble_servo->evt_handler(new_servo_value);
+	// Make sure that we have configured our Servo Service structure to point to an event handler
+	if(p_ble_servo->evt_handler != NULL)
+	{
+	    // Call the Servo Service event handler. This should call set_servo_value() in main.c
+	    p_ble_servo->evt_handler(new_servo_value);
+	}
     }
 }
 
