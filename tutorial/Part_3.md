@@ -1,7 +1,7 @@
 # Part 3: Adding a BLE Service
-In this part we will add a service and a characteristic that we can use to control our servo. Adding services and characteristics can be a complex task with a lot of things to consider, such as security aspects, characteristic properties, etc. However, since this workshop is so short we will just power through and skip everything that has to do with security and low-level configurations, and just implement the bare minimum of what we need. 
+In this part we will add a service and a characteristic that we can use to control our servo. Adding services and characteristics can be a complex task with a lot of things to consider, such as security aspects, characteristic properties, etc. However, since this workshop is so short we will skip everything that has to do with security and low-level configurations, and just implement the bare minimum of what we need. 
 
-To save time I have taken the liberty of writing almost all the necessary code. However, we will go through the process of 
+To save time I have taken the liberty of writing almost all the necessary code, but we will go through the details step by step.
 
 ## Initialize the service
 
@@ -97,9 +97,9 @@ So let us add something to our service.
 
 
 ## Receive BLE Write events
-Next we want to write values to our characteristic with nRF Connect. The SoftDevice  is completely event driver, and whenever we write any data to any characteristic the SoftDevice  will generate a write event. What we need to do is to response to listen for the write event and whenever such an event occur we need to figure out which characteristic was written to. 
+Next we want to write values to our characteristic with nRF Connect. The SoftDevice  is completely event driven and whenever we write data to our characteristics the SoftDevice  will generate a write event. So, what we need to do is to listen for write events and whenever such events occur, we need to figure out which characteristic was written to. 
 
-1. To catch the write events (defined as `BLE_GATTS_EVT_WRITE` in the SoftDevice  API), we are going to use the function called `ble_servo_on_ble_evt()` which is defined in _ble_servo.c_. In _main.c_, there is an event handler function called `ble_evt_handler()`. When the SoftDevice is being initialized, this function is registered as a handler for all BLE events (have a look in ``ble_stack_init()``). At the bottom of ``ble_evt_handler()``, make a call to `ble_servo_on_ble_evt()` and pass in a pointer to our `m_ble_servo` structure and a pointer to ``p_ble_evt``, which is a structure containing data about BLE events:
+1. To catch the write events (defined as `BLE_GATTS_EVT_WRITE` in the SoftDevice  API) we are going to use the function called `ble_servo_on_ble_evt()` which is defined in _ble_servo.c_. In _main.c_, there is an event handler function called `ble_evt_handler()`. When the SoftDevice is being initialized, this function is registered as a handler for all BLE events (have a look in ``ble_stack_init()``). At the bottom of ``ble_evt_handler()``, make a call to `ble_servo_on_ble_evt()`, and pass in a pointer to our `m_ble_servo` structure and a pointer to ``p_ble_evt``, which is a structure containing data about the current BLE event:
 
     ````c
     //TODO PART 3: Forward BLE events to ble_servo_on_ble_evt()	
@@ -113,11 +113,11 @@ Next we want to write values to our characteristic with nRF Connect. The SoftDev
 
 1. The function ``on_write_event()`` does a couple of things:
 
-    1. It extracts the relevant parameters and variables, like the data length and the data itself, from the `p_ble_evt` structure.
-    1. It checks whether the write event writes data to our Servo characteristic. 
+    1. It extracts the relevant parameters and variables from the `p_ble_evt` structure, like the data length and the data itself.
+    1. It checks whether the write event writes data to our particular Servo characteristic. 
     1. If the write event does indeed concern our Servo characteristic, it assembles the received data. 
     1. It prints some information messages to the Logger module (watch out for those in your terminal).
-    1. Forwards the received servo value to the Servo Service event handler. 
+    1. It forwards the received servo value to the Servo Service event handler. 
 
 
 1. To write data to our characteristic using nRF Connect for Mobile, click the upwards facing arrow to the right of our characteristic:
