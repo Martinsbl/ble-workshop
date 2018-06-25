@@ -125,10 +125,10 @@ ret_code_t ble_servo_service_init(ble_servo_t * p_ble_servo)
     err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
                                         &service_uuid,
                                         &p_ble_servo->service_handle);
-	APP_ERROR_CHECK(err_code); 				
-	
-	//TODO Add characteristic by calling servo_char_add()
-    servo_char_add(p_ble_servo);
+    APP_ERROR_CHECK(err_code); 				
+    
+    //TODO Add characteristic by calling servo_char_add()
+    
 
     return NRF_SUCCESS;
 }
