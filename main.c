@@ -83,10 +83,12 @@
 
 
 // TODO PART 2: Include nrfx_pwm.h
+#include "nrfx_pwm.h"
 
 // TODO PART 3: Include ble_servo.h
+#include "ble_servo.h"
 
-#define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "Completed Code"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -124,9 +126,10 @@ static void advertising_start(bool erase_bonds);
 
 
 //TODO PART 3: Decleare ble_servo_t variable
+ble_servo_t m_ble_servo;
 
 //TODO PART 3: Make a forward declaration of set_servo_value()
-
+void set_servo_value(uint16_t servo_value);
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -312,8 +315,10 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 static void services_init(void)
 {
     //TODO PART 3: Configure Servo Service event handler 
+    m_ble_servo.evt_handler = set_servo_value;
 
     //TODO PART 3: Initialize the Servo Service
+    ble_servo_service_init(&m_ble_servo);
 
 }
 
@@ -479,6 +484,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     }
 	
     //TODO PART 3: Forward BLE events to ble_servo_on_ble_evt()
+    ble_servo_on_ble_evt(p_ble_evt, &m_ble_servo);
 }
 
 
@@ -693,14 +699,72 @@ static void advertising_start(bool erase_bonds)
 
 
 //TODO PART 2: Declear a PWM driver Instance
+// Declare a PWM driver instance structure
+nrfx_pwm_t m_pwm0 = NRFX_PWM_INSTANCE(0);
 
 //TODO PART 2: Add PWM init() function
+// Function for initializing the PWM
+void init_pwm(void)
+{
+    uint32_t err_code;
+    // Declare a configuration structure and use a macro to instantiate it with default parameters.
+    nrfx_pwm_config_t pwm_config = NRFX_PWM_DEFAULT_CONFIG;
+
+    // We must override some of the parameters:
+    pwm_config.output_pins[0] = 3; // Connect LED_1 on the nRF52840 DK to PWM Channel 0
+    pwm_config.output_pins[1] = LED_2; // Connect LED_2 on the nRF52840 DK to PWM Channel 1
+    pwm_config.output_pins[2] = LED_3; // Connect LED_3 on the nRF52840 DK to PWM Channel 2
+    pwm_config.output_pins[3] = LED_4; // Connect LED_4 on the nRF52840 DK to PWM Channel 3
+    pwm_config.top_value    = 20000; // Make PWM count from 0 - 100
+    pwm_config.load_mode    = NRF_PWM_LOAD_INDIVIDUAL; // Use individual duty cycle for each PWM channel
+    
+    // Pass config structure into driver init() function 
+    err_code = nrfx_pwm_init(&m_pwm0, &pwm_config, NULL);
+    APP_ERROR_CHECK(err_code);
+}
 
 //TODO PART 2: Define structure with PWM duty cycle values
+// Structure for defining duty cycle values for sequences
+static nrf_pwm_values_individual_t pwm_duty_cycle_values = 
+{
+    .channel_0 = 18000, //< Duty cycle value for channel 0.
+    .channel_1 = 3000, //< Duty cycle value for channel 1.
+    .channel_2 = 8000, //< Duty cycle value for channel 2.
+    .channel_3 = 20000  //< Duty cycle value for channel 3.
+};
 
 //TODO PART 2: Define structure with PWM sequence info
+// Structure for defining a sequence of PWM duty cycles
+static nrf_pwm_sequence_t pwm_sequence =
+{
+    .values.p_individual = &pwm_duty_cycle_values,
+    .length          = (sizeof(pwm_duty_cycle_values) / sizeof(uint16_t)),
+    .repeats         = 0,
+    .end_delay       = 0
+};
 
 //TODO PART 2: Make a function that adjusts the PWM duty cycle.
+void set_servo_value(uint16_t servo_value)
+{
+    uint16_t new_servo_value;
+    if(servo_value < 18000)
+    {
+        new_servo_value = 18000;
+    }
+    else if(servo_value > 19000)
+    {
+        new_servo_value = 19000;
+    }
+    else
+    {
+        new_servo_value = servo_value;
+    }
+
+    pwm_duty_cycle_values.channel_0 = new_servo_value;
+    
+    NRF_LOG_INFO("Received value %d, setting servo to: %d", servo_value, new_servo_value);
+    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
+}
 
 /**@brief Function for application main entry.
  */
@@ -726,11 +790,30 @@ int main(void)
     // Start execution.
     NRF_LOG_INFO("\033[2J\033[;HWorkshop example started."); // Clear screen and show start message.
     //TODO PART 1: Test out NRF_LOG module
+    NRF_LOG_ERROR("This is an ERROR message.");
+    NRF_LOG_WARNING("This is a WARNING message.");
+    NRF_LOG_DEBUG("This is a DEBUG message.");
+
     //TODO PART 1. Test the error macro
-    
+//    uint32_t err_code = nrf_sdh_enable_request();
+//    APP_ERROR_CHECK(err_code);
+
     //TODO PART 2: Initiate and playback the PWM sequence
+    init_pwm();
+    nrfx_pwm_simple_playback(&m_pwm0, &pwm_sequence, 1, NRFX_PWM_FLAG_LOOP);
     
     advertising_start(erase_bonds);
+    
+    
+    for(int i = 0; i < 4; i++)
+    {
+	nrf_delay_ms(500); // Delay of 500 ms
+	set_servo_value(18000);
+    
+	nrf_delay_ms(500); // Delay of 500 ms
+	set_servo_value(19000);
+    }
+    
 
     // Enter main loop.
     for (;;)

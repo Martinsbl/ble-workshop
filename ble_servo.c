@@ -21,33 +21,33 @@ void on_write_event(ble_evt_t const * p_ble_evt, ble_servo_t * p_ble_servo)
     // Check whether the data written was a servo value. 
     if(p_evt_write->handle == p_ble_servo->servo_value_handles.value_handle)
     {
-		uint16_t new_servo_value = 0;
-		
-		// Convert data to an uint16_t. 
-		if(data_length == 1)
-		{
-			new_servo_value = data[0];	
-		}
-		else if(data_length == 2)
-		{
-			new_servo_value= (data[0] << 8) | data[1];
-		}
-		else
-		{
-			// Should never happen.
-			new_servo_value = 0; 
-		}
+	uint16_t new_servo_value = 0;
+	
+	// Convert data to an uint16_t. 
+	if(data_length == 1)
+	{
+		new_servo_value = data[0];	
+	}
+	else if(data_length == 2)
+	{
+		new_servo_value= (data[0] << 8) | data[1];
+	}
+	else
+	{
+		// Should never happen.
+		new_servo_value = 0; 
+	}
 
-		NRF_LOG_INFO("Got new servo values:");
-		NRF_LOG_INFO("Value: 0x%04X (%d)", new_servo_value, new_servo_value);
-		NRF_LOG_INFO("Data lenght: %d", data_length);
-		
-		// Make sure that we have configured our Servo Service structure to point to an event handler
-		if(p_ble_servo->evt_handler != NULL)
-		{
-			// Call the Servo Service event handler. This should call set_servo_value() in main.c
-			p_ble_servo->evt_handler(new_servo_value);
-		}
+	NRF_LOG_INFO("Got new servo values:");
+	NRF_LOG_INFO("Value: 0x%04X (%d)", new_servo_value, new_servo_value);
+	NRF_LOG_INFO("Data lenght: %d", data_length);
+	
+	// Make sure that we have configured our Servo Service structure to point to an event handler
+	if(p_ble_servo->evt_handler != NULL)
+	{
+		// Call the Servo Service event handler. This should call set_servo_value() in main.c
+		p_ble_servo->evt_handler(new_servo_value);
+	}
     }
 }
 
@@ -132,7 +132,7 @@ ret_code_t ble_servo_service_init(ble_servo_t * p_ble_servo)
     APP_ERROR_CHECK(err_code); 				
     
     //TODO Add characteristic by calling servo_char_add()
-    
+    servo_char_add(p_ble_servo);
 
     return NRF_SUCCESS;
 }
